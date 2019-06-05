@@ -236,11 +236,10 @@ function parseQuery(id, query) {
     if ((account = query.account)) {
 
         if (account instanceof Array) {
-            let accountList = account.map(a => ({ [Op.like]: `${a}%` }));
-            parsed.where.account = { [Op.or]: accountList };
+            parsed.where.account = { [Op.or]: account };
         }
         else {
-            parsed.where.account = { [Op.like]: `${account}%` };
+            parsed.where.account = account ;
         }
         delete query.account;
     }
