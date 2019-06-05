@@ -25,6 +25,7 @@ Transaction = sequelize.define('transaction', {
     exchangeRate: { type: CURRENCY_LARGE, validate: { isDecimal: true }, defaultValue: 1.0 },
     currency: { type: Sequelize.STRING, defaultValue: 'USD', notNull: true },
     account: Sequelize.STRING,
+    accountCode: Sequelize.INTEGER,
     timestamp: { type: Sequelize.DATE, validate: { isDate: true }, default: Date.now },
     voided: { type: Sequelize.BOOLEAN, default: false },
     voidReason: Sequelize.STRING,

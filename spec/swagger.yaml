@@ -207,7 +207,7 @@ paths:
         200:
           description: Success
           schema:
-            $ref: '#/definitions/Response'
+            $ref: '#/definitions/NewAccountResponse'
 
   '/books/{bookId}/transactions':
     parameters:
@@ -220,10 +220,16 @@ paths:
       summary: List all transactions for given accounts
       operationId: getTransactions
       parameters:
-      - name: accounts
-        description: A comma-separated search term for accounts
+      - name: account
+        description: Name of account to return transactions for
         in: query
         type: string
+        required: true
+
+      - name: accountCode
+        description: Code of account to return transactions for
+        in: query
+        type: number
         required: true
 
       - name: perPage
@@ -260,7 +266,12 @@ paths:
       operationId: getBalance
       parameters:
       - name: account
-        description: The account to get the balance for
+        description: The account name to get the balance for
+        in: query
+        type: string
+        required: true
+      - name: accountCode
+        description: The account code to get the balance for
         in: query
         type: string
         required: true
@@ -418,10 +429,14 @@ definitions:
     type: object
     required:
       - account
+      - accountCode
     properties:
       account:
-        description: The account this transaction is reflected on
+        description: The account name this transaction is reflected on
         type: string
+      accountCode:
+        description: The account code this transaction is reflected on
+        type: number
       credit:
         description: The credit value of the transaction
         type: number
@@ -487,7 +502,6 @@ definitions:
       - accountCode
       - accountName
       - toIncrease
-      - bookId
     properties:
       accountCode:
         description: Unique code for the new account
@@ -510,9 +524,19 @@ definitions:
       memo:
         description: Some description of the account
         type: string
-      bookId:
-        description: Already created book for account to be linked to
-        type: integer
+
+  NewAccountResponse:
+    type: object
+    properties:
+      success:
+        description: Indicates whether request was succesful
+        type: boolean
+      message:
+        description: Short elaboration of status
+        type: string
+      account:
+        description: New account created object
+        type: object
 
   Balance:
     type: object

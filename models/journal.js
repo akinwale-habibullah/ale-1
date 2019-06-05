@@ -14,18 +14,18 @@
 const Sequelize = require('sequelize');
 const sequelize = require('./connection');
 const Transaction = require('./transaction');
-const {NEAR_ZERO} = require('./types');
-const {AleError, codes} = require('../lib/errors');
+const { NEAR_ZERO } = require('./types');
+const { AleError, codes } = require('../lib/errors');
 
 /**
  * A journal entry comprises a set of transactions, which have a balance set of debit and credit entries
  */
 const JournalEntry = sequelize.define('journal', {
-        memo: {type: Sequelize.TEXT, defaultValue: ''},
-        timestamp: {type: Sequelize.DATE, validate: {isDate: true}, defaultValue: Date.now},
-        voided: {type: Sequelize.BOOLEAN, defaultValue: false},
-        voidReason: Sequelize.STRING
-    }, {
+    memo: { type: Sequelize.TEXT, defaultValue: '' },
+    timestamp: { type: Sequelize.DATE, validate: { isDate: true }, defaultValue: Date.now },
+    voided: { type: Sequelize.BOOLEAN, defaultValue: false },
+    voidReason: Sequelize.STRING
+}, {
         name: {
             singular: 'JournalEntry',
             plural: 'JournalEntries'
@@ -33,11 +33,11 @@ const JournalEntry = sequelize.define('journal', {
     }
 );
 
-Transaction.JournalEntry = Transaction.belongsTo(JournalEntry, {foreignKey: {allowNull: false}, onDelete: 'CASCADE'});
-JournalEntry.hasOne(JournalEntry, {as: 'Original'});
-JournalEntry.hasMany(Transaction, {foreignKey: {allowNull: false}, onDelete: 'CASCADE'});
+Transaction.JournalEntry = Transaction.belongsTo(JournalEntry, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' });
+JournalEntry.hasOne(JournalEntry, { as: 'Original' });
+JournalEntry.hasMany(Transaction, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' });
 
-JournalEntry.prototype.values = function() {
+JournalEntry.prototype.values = function () {
     return {
         id: this.getDataValue('id'),
         memo: this.getDataValue('memo'),
@@ -48,21 +48,21 @@ JournalEntry.prototype.values = function() {
     };
 };
 
-JournalEntry.prototype.voidEntry = function(book, reason) {
+JournalEntry.prototype.voidEntry = function (book, reason) {
     if (this.voided === true) {
         return sequelize.Promise.reject(new Error('Journal entry already voided'));
     }
-    return sequelize.transaction({autocommit: false}, t => {
+    return sequelize.transaction({ autocommit: false }, t => {
         // Set this to void with reason and also set all associated transactions
         this.voided = true;
         this.voidReason = !reason ? '' : reason;
-        return this.save({transaction: t}).then(oldEntry => {
+        return this.save({ transaction: t }).then(oldEntry => {
             return oldEntry.getTransactions();
         }).then(txs => {
             return sequelize.Promise.map(txs, tx => {
                 tx.voided = true;
                 tx.voidReason = reason;
-                return tx.save({transaction: t});
+                return tx.save({ transaction: t });
             });
         }).then(txs => {
             let newMemo = `${this.memo} [REVERSED]`;
@@ -92,20 +92,21 @@ JournalEntry.prototype.voidEntry = function(book, reason) {
     });
 };
 
-JournalEntry.prototype.newTransaction = function(account, amount, isCredit, currency, exchangeRate = 1.0) {
+JournalEntry.prototype.newTransaction = function (account, accountCode, amount, isCredit, currency, exchangeRate = 1.0) {
     amount = +amount;
     if (typeof account === 'string') {
         account = account.split(':');
     }
-    
+
     if (account.length > 3) {
         const err = new Error('Account path is too deep (maximum 3)');
         err.accountPath = account;
         throw err;
     }
-    
+
     const transaction = Transaction.build({
         account: account.join(':'),
+        accountCode: accountCode,
         credit: isCredit ? amount : 0.0,
         debit: isCredit ? 0.0 : amount,
         exchangeRate: +exchangeRate,
@@ -117,24 +118,24 @@ JournalEntry.prototype.newTransaction = function(account, amount, isCredit, curr
         this.pendingTransactions = [];
     }
     this.pendingTransactions.push(transaction);
-    
+
     return this;
 };
 
-JournalEntry.prototype.debit = function(account, amount, currency = undefined, exchangeRate = 1.0) {
-    return this.newTransaction(account, amount, false, currency, exchangeRate);
+JournalEntry.prototype.debit = function (account, accountCode, amount, currency = undefined, exchangeRate = 1.0) {
+    return this.newTransaction(account, accountCode, amount, false, currency, exchangeRate);
 };
 
-JournalEntry.prototype.credit = function(account, amount, currency = undefined, exchangeRate = 1.) {
-    return this.newTransaction(account, amount, true, currency, exchangeRate);
+JournalEntry.prototype.credit = function (account, accountCode, amount, currency = undefined, exchangeRate = 1.) {
+    return this.newTransaction(account, accountCode, amount, true, currency, exchangeRate);
 };
 
-JournalEntry.prototype.commit = function() {
+JournalEntry.prototype.commit = function () {
     const total = this.calculatePendingTotal();
     if (Math.abs(total) > NEAR_ZERO) {
         return sequelize.Promise.reject(new AleError('Invalid Journal Entry. Total not zero', codes.EntryNotBalanced));
     }
-    return sequelize.transaction({autocommit: false}, t => {
+    return sequelize.transaction({ autocommit: false }, t => {
         return this._saveEntryWithTxs(t);
     }).then(result => {
         // Transaction has committed
@@ -146,18 +147,18 @@ JournalEntry.prototype.commit = function() {
     });
 };
 
-JournalEntry.prototype._saveEntryWithTxs = function(t) {
+JournalEntry.prototype._saveEntryWithTxs = function (t) {
     let result;
-    return this.save({transaction: t}).then(e => {
+    return this.save({ transaction: t }).then(e => {
         result = e;
         const id = result.getDataValue('id');
-        return this.saveTransactions(id, {transaction: t});
+        return this.saveTransactions(id, { transaction: t });
     }).then(() => {
         return sequelize.Promise.resolve(result);
     });
 };
 
-JournalEntry.prototype.calculatePendingTotal = function(txs) {
+JournalEntry.prototype.calculatePendingTotal = function (txs) {
     const transactions = txs || this.pendingTransactions;
     if (!transactions || !Array.isArray(transactions) || transactions.length === 0) {
         return;
@@ -170,7 +171,7 @@ JournalEntry.prototype.calculatePendingTotal = function(txs) {
     return total;
 };
 
-JournalEntry.prototype.saveTransactions = function(id, opts) {
+JournalEntry.prototype.saveTransactions = function (id, opts) {
     const transactions = this.pendingTransactions;
     return sequelize.Promise.map(transactions, tx => {
         tx.setDataValue('JournalEntryId', id);

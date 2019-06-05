@@ -39,13 +39,13 @@ const Account = sequelize.define('account', {
  */
 Account.getOrCreateBook = function (accountCode, accountName, toIncrease, accountClassification, accountType, subAccountType, memo, bookId) {
   return Account.findOrCreate({
-    where: { accountCode: accountCode },
+    where: { $or: [{ accountCode }, { accountName }] },
     defaults: {
       accountCode, accountName, toIncrease, accountClassification, accountType, subAccountType, memo, bookId
     }
   }).then(result => {
     if (result.includes(false)) {
-      return sequelize.Promise.reject(new AleError('Account code already exists', codes.DatabaseQueryError));
+      return sequelize.Promise.reject(new AleError('Account code or name already exists', codes.DatabaseQueryError));
     }
     return result
   });
@@ -57,7 +57,7 @@ Account.getAccounts = function (id) {
       bookId: id
     }
   }).then(results => {
-    
+
     return results
   });
 };
