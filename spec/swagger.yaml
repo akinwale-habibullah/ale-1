@@ -501,6 +501,7 @@ definitions:
     required:
       - accountCode
       - accountName
+      - isPorL
       - toIncrease
     properties:
       accountCode:
@@ -512,9 +513,9 @@ definitions:
       toIncrease:
         description: Posting to increase account
         type: string
-      accountClassification:
-        description: Is this a 'Balance sheet' or 'P or L' account
-        type: string
+      isPorL:
+        description: Is this a 'P or L' or 'Balance sheet' account
+        type: boolean
       accountType:
         description: Which account type? Income, liability etc.
         type: string
