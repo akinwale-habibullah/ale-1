@@ -16,8 +16,11 @@ const User = sequelize.define('user', {
 
 /**
  * Gets an existing user, or creates a new one
- * @param name The name of the new book
- * @param quoteCurrency The Base currency for the book. If the book already exists, this parameter must match the existing base currency or be undefined.
+ * @param firstName The first name of the candidate user
+ * @param lastName The last name of the candidate user
+ * @param email The email of the candidate user
+ * @param userName The username of the candidate user
+ * @param password The password of the candidate user
  */
 User.getOrCreateUser = function (firstName, lastName, email, userName, password) {
   return User.findOrCreate({ where: { email }, defaults: { firstName, lastName, userName, password } })

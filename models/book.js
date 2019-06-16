@@ -223,7 +223,16 @@ Book.normalizeRates = function (currency, rates) {
  */
 function parseQuery(id, query) {
     let account;
-    const parsed = { where: { bookId: id } };
+    let parsed
+
+    if (query.userId) {
+        parsed = { where: { bookId: id, userId: query.userId } };
+    } else if (query.companyId) {
+        parsed = { where: { bookId: id, companyId: query.companyId } };
+    } else {
+        parsed = { where: { bookId: id } };
+    }
+
     query = query || {};
     if (query.perPage) {
         const perPage = query.perPage || 25;
@@ -239,7 +248,7 @@ function parseQuery(id, query) {
             parsed.where.account = { [Op.or]: account };
         }
         else {
-            parsed.where.account = account ;
+            parsed.where.account = account;
         }
         delete query.account;
     }
