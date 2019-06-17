@@ -14,6 +14,8 @@
 
 const Sequelize = require('sequelize');
 const sequelize = require('./connection');
+const User = require('./user');
+const Company = require('./company');
 const { CURRENCY_LARGE } = require('./types');
 
 /**
@@ -29,6 +31,26 @@ Transaction = sequelize.define('transaction', {
     timestamp: { type: Sequelize.DATE, validate: { isDate: true }, default: Date.now },
     voided: { type: Sequelize.BOOLEAN, default: false },
     voidReason: Sequelize.STRING,
+    userId: {
+        type: Sequelize.INTEGER,
+        references: {
+            // This is a reference to another model
+            model: User,
+
+            // This is the column name of the referenced model
+            key: 'id',
+        }
+    },
+    companyId: {
+        type: Sequelize.INTEGER,
+        references: {
+            // This is a reference to another model
+            model: Company,
+
+            // This is the column name of the referenced model
+            key: 'id',
+        }
+    },
 }, {});
 
 /**

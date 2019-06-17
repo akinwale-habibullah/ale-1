@@ -92,7 +92,7 @@ JournalEntry.prototype.voidEntry = function (book, reason) {
     });
 };
 
-JournalEntry.prototype.newTransaction = function (account, accountCode, amount, isCredit, currency, exchangeRate = 1.0) {
+JournalEntry.prototype.newTransaction = function (account, accountCode, amount, isCredit, currency, exchangeRate = 1.0, userId, companyId) {
     amount = +amount;
     if (typeof account === 'string') {
         account = account.split(':');
@@ -112,7 +112,9 @@ JournalEntry.prototype.newTransaction = function (account, accountCode, amount, 
         exchangeRate: +exchangeRate,
         currency: currency,
         timestamp: new Date(),
-        bookId: this.getDataValue('bookId')
+        bookId: this.getDataValue('bookId'),
+        userId: userId ? userId : null,
+        companyId: companyId ? companyId : null,
     });
     if (!this.pendingTransactions) {
         this.pendingTransactions = [];

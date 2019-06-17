@@ -91,6 +91,33 @@ paths:
               success: false
               message: Invalid input
 
+  '/company': 
+    post:
+      parameters:
+        - in: body
+          name: body
+          description: Company details
+          required: true
+          schema:
+            $ref: '#/definitions/PostCompany'
+      operationId: postCompany
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/CompanyObject'
+          examples:
+            application/json:
+              success: true
+              message: User details
+        400:
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: Invalid input
 
   '/books/': # path parameter in curly braces
     get:
@@ -338,6 +365,48 @@ paths:
         in: query
         type: string
         required: true
+      - name: inQuoteCurrency
+        description: If true (default), converts all values to the quote currency first
+        in: query
+        type: boolean
+        required: false
+      produces:
+        - application/json
+      responses: # list of responses
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/Balance'
+
+  '/books/{bookId}/subacctbalance':
+    parameters:
+    - name: bookId
+      description: The book to extract entries from
+      in: path
+      type: integer
+      required: true
+    get:
+      summary: Return a sub account balance
+      operationId: getSubAcctBalance
+      parameters:
+      - name: account
+        description: The account name to get the balance for
+        in: query
+        type: string
+        required: true
+      - name: accountCode
+        description: The account code to get the balance for
+        in: query
+        type: string
+        required: true
+      - name: userId
+        description: The id of user who owns the subaccount
+        in: query
+        type: string
+      - name: companyId
+        description: The id of company who owns the subaccount
+        in: query
+        type: string
       - name: inQuoteCurrency
         description: If true (default), converts all values to the quote currency first
         in: query
@@ -666,6 +735,22 @@ definitions:
         type: string
       password:
         description: Password of user to be signed in
+        type: string
+
+  PostCompany:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        description: Name of company to be registered
+        type: string
+
+  CompanyObject:
+    type: object
+    properties:
+      name:
+        description: Name of company registered
         type: string
 
   UserObject:
