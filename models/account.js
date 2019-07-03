@@ -10,7 +10,7 @@ const Account = sequelize.define('account', {
   accountCode: { type: Sequelize.INTEGER, notNull: true, unique: { args: true, msg: 'The account code already exists' } },
   accountName: { type: Sequelize.STRING, unique: { args: true, msg: 'The account name already exists' } },
   toIncrease: { type: Sequelize.STRING, notNull: true },
-  accountClassification: { type: Sequelize.STRING },
+  isPorL: { type: Sequelize.BOOLEAN, notNull: true },
   accountType: { type: Sequelize.STRING },
   subAccountType: { type: Sequelize.STRING },
   memo: { type: Sequelize.STRING },
@@ -31,17 +31,17 @@ const Account = sequelize.define('account', {
  * @param accountCode Unique code for the new account
  * @param accountName Unique name of the new account
  * @param toIncrease Debit or Credit - to increase the account
- * @param accountClassification Is this a 'Balance sheet' or 'P or L' account
+ * @param isPorL Is this a 'Balance sheet' or 'P or L' account
  * @param accountType Which account type? Income, liability etc.
  * @param subAccountType Which sub-account type? current asset, non-current etc. Also for reporting purposes
  * @param memo Some description of the account
  * @param bookId Already created book for account to be linked to
  */
-Account.getOrCreateBook = function (accountCode, accountName, toIncrease, accountClassification, accountType, subAccountType, memo, bookId) {
+Account.getOrCreateBook = function (accountCode, accountName, toIncrease, isPorL, accountType, subAccountType, memo, bookId) {
   return Account.findOrCreate({
     where: { $or: [{ accountCode }, { accountName }] },
     defaults: {
-      accountCode, accountName, toIncrease, accountClassification, accountType, subAccountType, memo, bookId
+      accountCode, accountName, toIncrease, isPorL, accountType, subAccountType, memo, bookId
     }
   }).then(result => {
     if (result.includes(false)) {

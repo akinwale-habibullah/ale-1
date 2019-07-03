@@ -7,13 +7,11 @@ host: localhost:8813
 basePath: /
 info:
   description: |
-    # A.L.E Double-Entry Accounting REST API
+    # ThriftBox REST API
 
-    ALE divides itself into "books", each of which store *journal entries* and their child *transactions*.
-    The cardinal rule of double-entry accounting is that "everything must balance out to zero", and that rule is applied
-    to every journal entry written to the book.
+    ThriftBox is an application to manage and administer cooperative societies.
   version: '1.0.0'
-  title: A.L.E.
+  title: ThriftBox
   license:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'

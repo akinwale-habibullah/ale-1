@@ -31,6 +31,7 @@
   ],
   "dependencies": {
     "async": "^2.5.0",
+    "bcrypt": "3.0.6",
     "bignumber.js": "^4.0.4",
     "body-parser": "1.18.2",
     "bower": "^1.7.7",
@@ -42,6 +43,7 @@
     "gulp": "^3.9.1",
     "gulp-connect": "^4.2.0",
     "gulp-util": "^3.0.7",
+    "jsonwebtoken": "8.5.1",
     "portfinder": "^1.0.3",
     "sequelize": "^4.11.0",
     "shelljs": "^0.7.0",
