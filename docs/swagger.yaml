@@ -1,0 +1,771 @@
+# Documentation: https://swagger.io/docs/specification/2-0/basic-structure/
+
+swagger: '2.0'
+schemes:
+  - http
+host: localhost:8813
+basePath: /
+info:
+  description: |
+    # ThriftBox REST API
+
+    ThriftBox is an application to manage and administer cooperative societies.
+  version: '1.0.0'
+  title: ThriftBox
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  x-logo:
+    url: '/ale/logo.png'
+externalDocs:
+  description: A.L.E. Github page
+  url: 'https://github.com/CjS77/ale'
+produces:
+  # This is a global default. You can OVERWRITE it in each specific operation.
+  - application/json
+consumes:
+  # List of mime types the API endpoints consume
+  # This is a global default. You can OVERWRITE it in each specific operation.
+  - application/json
+securityDefinitions:
+  # Defines the security implemented in the application. The token security system is implemented.
+  tokenAuth:
+    type: basic
+# Holds the relative paths to the individual endpoints. The path is appended to the basePath in order to construct the full URL.
+paths:
+  '/users/signup': 
+    post:
+      parameters:
+        - in: body
+          name: body
+          description: New user definition
+          required: true
+          schema:
+            $ref: '#/definitions/PostUserSignup'
+      operationId: postUserSignup
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/UserObject'
+          examples:
+            application/json:
+              success: false
+              message: User already exists
+        400:
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: Invalid input
+
+  '/users/signin': 
+    post:
+      parameters:
+        - in: body
+          name: body
+          description: User signin details
+          required: true
+          schema:
+            $ref: '#/definitions/PostUserSignin'
+      operationId: postUserSignin
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/UserObject'
+          examples:
+            application/json:
+              success: true
+              message: User details
+        400:
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: Invalid input
+
+  '/company': 
+    post:
+      parameters:
+        - in: body
+          name: body
+          description: Company details
+          required: true
+          schema:
+            $ref: '#/definitions/PostCompany'
+      operationId: postCompany
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/CompanyObject'
+          examples:
+            application/json:
+              success: true
+              message: User details
+        400:
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: Invalid input
+
+  '/books/': # path parameter in curly braces
+    get:
+      security:
+        - tokenAuth: []
+      summary: List all current books
+      description: |
+        Produces an array of all the books currently registered on the database.
+      operationId: getBooks
+      responses:
+        200:
+          description: The array of books
+          schema: # response schema can be specified for each response
+            $ref: '#/definitions/Books'
+          examples:
+            application/json:
+              [
+                { id: "General Ledger", currency: "USD"},
+                { id: "London office ledger", currency: "GBP"},
+              ]
+
+    post:
+      parameters:
+        - in: body
+          name: body
+          description: New Book definition
+          required: true
+          schema:
+            $ref: '#/definitions/Book'
+      operationId: postBooks
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/BookResponse'
+          examples:
+            application/json:
+              success: false
+              message: Book 'General' already exists
+        400:
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: Book 'Foobar' does not exist
+
+  '/books/{bookId}/ledger':
+    parameters:
+      - name: bookId
+        description: The book to extract entries from
+        in: path
+        type: integer
+        required: true
+    post:
+      summary: Post a new Journal entry
+      description: Add a new (balanced) Journal entry to the book
+      operationId: postBookEntry
+
+      parameters:
+        - name: body
+          in: body
+          description: The new Journal Entry definition
+          schema:
+            $ref: '#/definitions/NewJournalEntry'
+
+      produces:
+        - application/json
+      responses: # list of responses
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/PostEntryResponse'
+
+    get:
+      summary: Fetch the ledger
+      description: |
+        Fetches all transactions for the given book for the dates provided
+      operationId: getBookEntries
+
+      parameters:
+      - name: bookId
+        description: The book to extract entries from
+        in: path
+        type: integer
+        required: true
+
+      - name: startDate
+        in: query
+        description: 'The start date for entries'
+        required: false
+        type: string
+
+      - name: endDate
+        in: query
+        description: 'The end date for entries'
+        required: false
+        type: string
+
+      - name: perPage
+        in: query
+        description: 'The number of results per page'
+        required: false
+        type: integer
+
+      - name: page
+        in: query
+        description: 'The page number'
+        required: false
+        type: integer
+
+      produces:
+      - application/json
+      responses: # list of responses
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/Entries'
+          examples:
+            application/json:
+              {
+                book: { id: "General Ledger", currency: 'USD' },
+                startDate: 1520228313023,
+                endDate: 1520428313023,
+                entries: [
+                  {
+                    date: 1520228313023,
+                    memo: 'Payroll',
+                    transactions: [
+                      { account: "Bank:Local", debit: 1000.0, currency: "USD", exchangeRate: 1.0 },
+                      { account: "Employees:Alice", value: 500.0, currency: "USD", exchangeRate: 1.0 },
+                      { account: "Employees:Bob", value: 500.0, currency: "USD", exchangeRate: 1.0 }
+                    ]
+                  }
+                ]
+              }
+        400:
+          description: Invalid input, such as unknown book
+          schema:
+            $ref: '#/definitions/Response'
+
+  '/books/{bookId}/accounts':
+    parameters:
+    - name: bookId
+      description: The book to extract entries from
+      in: path
+      type: integer
+      required: true
+    get:
+      summary: List all accounts
+      operationId: getAccounts
+      produces:
+        - application/json
+      responses: # list of responses
+        200:
+          description: Success
+          schema:
+            type: array
+            items:
+              type: string
+    post:
+      summary: Create a new account
+      description: Creates a new account or returns existing of account already exists
+      operationId: postAccount
+
+      parameters:
+        - name: body
+          in: body
+          description: The new account definition
+          schema:
+            $ref: '#/definitions/NewAccountEntry'
+
+      produces:
+        - application/json
+      responses: # list of responses
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/NewAccountResponse'
+
+  '/books/{bookId}/transactions':
+    parameters:
+    - name: bookId
+      description: The book to extract entries from
+      in: path
+      type: integer
+      required: true
+    get:
+      summary: List all transactions for given accounts
+      operationId: getTransactions
+      parameters:
+      - name: account
+        description: Name of account to return transactions for
+        in: query
+        type: string
+        required: true
+
+      - name: accountCode
+        description: Code of account to return transactions for
+        in: query
+        type: number
+        required: true
+
+      - name: perPage
+        in: query
+        description: 'The number of results per page'
+        required: false
+        type: integer
+
+      - name: page
+        in: query
+        description: 'The page number'
+        required: false
+        type: integer
+
+      produces:
+        - application/json
+      responses: # list of responses
+        200:
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Transaction'
+
+  '/books/{bookId}/balance':
+    parameters:
+    - name: bookId
+      description: The book to extract entries from
+      in: path
+      type: integer
+      required: true
+    get:
+      summary: Return an account balance
+      operationId: getBalance
+      parameters:
+      - name: account
+        description: The account name to get the balance for
+        in: query
+        type: string
+        required: true
+      - name: accountCode
+        description: The account code to get the balance for
+        in: query
+        type: string
+        required: true
+      - name: inQuoteCurrency
+        description: If true (default), converts all values to the quote currency first
+        in: query
+        type: boolean
+        required: false
+      produces:
+        - application/json
+      responses: # list of responses
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/Balance'
+
+  '/books/{bookId}/subacctbalance':
+    parameters:
+    - name: bookId
+      description: The book to extract entries from
+      in: path
+      type: integer
+      required: true
+    get:
+      summary: Return a sub account balance
+      operationId: getSubAcctBalance
+      parameters:
+      - name: account
+        description: The account name to get the balance for
+        in: query
+        type: string
+        required: true
+      - name: accountCode
+        description: The account code to get the balance for
+        in: query
+        type: string
+        required: true
+      - name: userId
+        description: The id of user who owns the subaccount
+        in: query
+        type: string
+      - name: companyId
+        description: The id of company who owns the subaccount
+        in: query
+        type: string
+      - name: inQuoteCurrency
+        description: If true (default), converts all values to the quote currency first
+        in: query
+        type: boolean
+        required: false
+      produces:
+        - application/json
+      responses: # list of responses
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/Balance'
+
+  '/books/{bookId}/tb':
+    parameters:
+    - name: bookId
+      description: The book to extract tb from
+      in: path
+      type: integer
+      required: true
+    get:
+      summary: Return a tb; list of all accounts and balance
+      operationId: getTb
+      parameters:
+      - name: startDate
+        description: Start date for Profit or Loss account
+        in: query
+        type: string
+        required: true
+      - name: endDate
+        description: End date for  Profit or Loss and Balance sheet
+        in: query
+        type: string
+        required: true
+      produces:
+        - application/json
+      responses: # list of responses
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/Balance'
+
+  '/books/{bookId}/marktomarket':
+    parameters:
+    - name: bookId
+      description: The book to extract entries from
+      in: path
+      type: integer
+      required: true
+    post:
+      summary: Mark the account(s) to market
+      description: Calculates the unlrealised profit of the given accounts at the exchange rate vector provided
+      operationId: postMarkToMarket
+      parameters:
+      - name: body
+        in: body
+        schema:
+          type: object
+          required:
+            - accounts
+            - exchangeRates
+          properties:
+            accounts:
+              type: array
+              items:
+                type: string
+            exchangeRates:
+              type: object
+              additionalProperties:
+                type: number
+      produces:
+        - application/json
+      responses: # list of responses
+        200:
+          description: Success
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/UnrealisedProfit'
+
+# An object to hold data types that can be consumed and produced by operations.
+# These data types can be primitives, arrays or models.
+definitions:
+
+  Books:
+    type: array
+    items:
+      $ref: '#/definitions/Book'
+
+  Book:
+    type: object
+    required:
+      - name
+      - currency
+    properties:
+      id:
+        description: The id for the book the book
+        type: integer
+      name:
+        description: The name of the book
+        type: string
+        example: General Ledger
+      currency:
+        description: |
+          The currency the book is referenced in.
+          All other currencies and calculations are quoted in terms of this currency
+        type: string
+        example: USD
+      createdAt:
+        description: The timestamp of when the book was created
+        type: number
+      updatedAt:
+        description: The timestamp of the last time this entry was modified
+        type: number
+
+  Entries:
+    type: object
+    properties:
+      book:
+        $ref: '#/definitions/Book'
+      startDate:
+        type: number
+      endDate:
+        type: number
+      entries:
+        type: array
+        items:
+          $ref: '#/definitions/Entry'
+
+  Entry:
+    type: object
+    properties:
+      date:
+        description: The timestamp for the entry
+        type: number
+      memo:
+        description: The description for the entry
+        type: string
+      voided:
+        description: Indicates whether the entry is still valid
+        type: boolean
+      voidReason:
+        description: The reason for the entry reversal
+        type: string
+      transactions:
+        description: An array of transactions for the entry
+        type: array
+        items:
+          $ref: '#/definitions/Transaction'
+
+  Transaction:
+    type: object
+    required:
+      - account
+      - accountCode
+    properties:
+      account:
+        description: The account name this transaction is reflected on
+        type: string
+      accountCode:
+        description: The account code this transaction is reflected on
+        type: number
+      credit:
+        description: The credit value of the transaction
+        type: number
+      debit:
+        description: The debit value of the transaction
+        type: number
+      currency:
+        description: The currency for this transaction
+        type: string
+      exchangeRate:
+        description: The exchange rate to convert to the basis currency
+        type: number
+
+  Response:
+    type: object
+    properties:
+      success:
+        description: Indicates whether request was succesful
+        type: boolean
+      message:
+        type: string
+
+  ErrorResponse:
+    allOf:
+      - $ref: '#/definitions/Response'
+      - properties:
+          errorCode:
+            type: integer
+
+  BookResponse:
+    allOf:
+      - $ref: '#/definitions/Response'
+      - $ref: '#/definitions/Book'
+
+  PostEntryResponse:
+    allOf:
+      - $ref: '#/definitions/Response'
+      - properties:
+          id:
+            description: The id of the new Journal Entry
+            type: integer
+
+  NewJournalEntry:
+    type: object
+    required:
+      - memo
+      - transactions
+    properties:
+      memo:
+        description: The Journal Entry description
+        type: string
+      timestamp:
+        description: The time stamp for the journal entry
+        type: string
+      transactions:
+        type: array
+        items:
+          $ref: '#/definitions/Transaction'
+
+  NewAccountEntry:
+    type: object
+    required:
+      - accountCode
+      - accountName
+      - isPorL
+      - toIncrease
+    properties:
+      accountCode:
+        description: Unique code for the new account
+        type: integer
+      accountName:
+        description: Name for new account
+        type: string
+      toIncrease:
+        description: Posting to increase account
+        type: string
+      isPorL:
+        description: Is this a 'P or L' or 'Balance sheet' account
+        type: boolean
+      accountType:
+        description: Which account type? Income, liability etc.
+        type: string
+      subAccountType:
+        description: Which sub-account type? current asset, non-current etc. Also for reporting purposes
+        type: string
+      memo:
+        description: Some description of the account
+        type: string
+
+  NewAccountResponse:
+    type: object
+    properties:
+      success:
+        description: Indicates whether request was succesful
+        type: boolean
+      message:
+        description: Short elaboration of status
+        type: string
+      account:
+        description: New account created object
+        type: object
+
+  Balance:
+    type: object
+    properties:
+      creditTotal:
+        description: The total value of credits into the account
+        type: number
+      debitTotal:
+        description: The total value of debits into the account
+        type: number
+      balance:
+        description: The current account balabce (credits - debits)
+        type: number
+      currency:
+        description: The nominal currency of the account
+        type: number
+      numTransactions:
+        description: The number of transactions into the account
+        type: number
+
+  UnrealisedProfit:
+    type: object
+    properties:
+      unrealizedProfit:
+        description: The total current unrealised profit for the given accounts
+        type: number
+      additionalProperties:
+        type: number
+
+  PostUserSignup:
+    type: object
+    required:
+      - firstName
+      - lastName
+      - email
+      - userName
+      - password
+    properties:
+      firstName:
+        description: Firstname of user to be registered
+        type: string
+      lastName:
+        description: Lastname of user to be registered
+        type: string
+      email:
+        description: Email of user to be registered
+        type: string
+      userName:
+        description: Username of user to be registered
+        type: string
+      password:
+        description: Password of user to be registered
+        type: string
+
+  PostUserSignin:
+    type: object
+    required:
+      - email
+      - password
+    properties:
+      email:
+        description: Email of user to be signed in
+        type: string
+      password:
+        description: Password of user to be signed in
+        type: string
+
+  PostCompany:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        description: Name of company to be registered
+        type: string
+
+  CompanyObject:
+    type: object
+    properties:
+      name:
+        description: Name of company registered
+        type: string
+
+  UserObject:
+    type: object
+    properties:
+      firstName:
+        description: Firstname of user to be registered
+        type: string
+      lastName:
+        description: Lastname of user to be registered
+        type: string
+      email:
+        description: Email of user to be registered
+        type: string
+      userName:
+        description: Username of user to be registered
+        type: string
+      token:
+        description: User token
+        type: string
