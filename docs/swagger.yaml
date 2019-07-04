@@ -3,12 +3,11 @@
 swagger: '2.0'
 schemes:
   - http
-host: localhost:8813
+host: localhost:5000
 basePath: /
 info:
   description: |
     # ThriftBox REST API
-
     ThriftBox is an application to manage and administer cooperative societies.
   version: '1.0.0'
   title: ThriftBox
@@ -18,8 +17,8 @@ info:
   x-logo:
     url: '/ale/logo.png'
 externalDocs:
-  description: A.L.E. Github page
-  url: 'https://github.com/CjS77/ale'
+  description: ThroftBox backend Github page
+  url: 'https://github.com/olajide1234/ale'
 produces:
   # This is a global default. You can OVERWRITE it in each specific operation.
   - application/json
@@ -35,6 +34,10 @@ securityDefinitions:
 paths:
   '/users/signup': 
     post:
+      summary: Create a new user
+      description: Create a new user in the database
+      operationId: postUserSignup
+
       parameters:
         - in: body
           name: body
@@ -42,35 +45,10 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/PostUserSignup'
-      operationId: postUserSignup
-      responses:
-        200:
-          description: Success
-          schema:
-            $ref: '#/definitions/UserObject'
-          examples:
-            application/json:
-              success: false
-              message: User already exists
-        400:
-          description: Bad input
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-          examples:
-            application/json:
-              success: false
-              message: Invalid input
 
-  '/users/signin': 
-    post:
-      parameters:
-        - in: body
-          name: body
-          description: User signin details
-          required: true
-          schema:
-            $ref: '#/definitions/PostUserSignin'
-      operationId: postUserSignin
+      produces:
+        - application/json
+
       responses:
         200:
           description: Success
@@ -79,7 +57,20 @@ paths:
           examples:
             application/json:
               success: true
-              message: User details
+              message: New account has been created successfully
+              data: {
+                      "isNew": true,
+                      "user": {
+                          "id": 2,
+                          "firstName": "Olajide",
+                          "lastName": "Ayinla",
+                          "userName": "Olajide",
+                          "email": "ayinlaolajide@yahooF.com",
+                          "memberId": "0909123"
+                      },
+                      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1NjIyNDE0NDYsImV4cCI6MTU2Mjg0Nj"
+                    }
+
         400:
           description: Bad input
           schema:
@@ -88,9 +79,60 @@ paths:
             application/json:
               success: false
               message: Invalid input
+              errorCode: 10
+
+  '/users/signin': 
+    post:
+      summary: Sign in a user
+      description: Signs in a returning user to the database
+      operationId: postUserSignin
+
+      parameters:
+        - in: body
+          name: body
+          description: User signin details
+          required: true
+          schema:
+            $ref: '#/definitions/PostUserSignin'
+
+      produces:
+        - application/json
+
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/UserObject'
+          examples:
+            application/json:
+              success: true
+              message: User signed in successfully
+              data: {
+                      "user": {
+                          "id": 1,
+                          "firstName": "Olajide",
+                          "lastName": "Ayinla",
+                          "userName": "Olajide",
+                          "email": "ayinlaolajide@yahoo.com"
+                      },
+                      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTU2MjI0MTYzMiwiZXhwIjoxNTYyODQ2NDMyfQ.ouIFT3f2C3wUXoKjUp-K_imYYfBkvQW-BgPbfnSqUoU"
+                    }
+        400:
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: Invalid input
+              errorCode: 10
 
   '/company': 
     post:
+      summary: Create a new company
+      description: Creates a new company in the database
+      operationId: postCompany
+
       parameters:
         - in: body
           name: body
@@ -98,7 +140,6 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/PostCompany'
-      operationId: postCompany
       responses:
         200:
           description: Success
@@ -107,7 +148,16 @@ paths:
           examples:
             application/json:
               success: true
-              message: User details
+              message: New company has been created successfully
+              data: {
+                      "isNew": true,
+                      "company": {
+                          "id": 1,
+                          "name": "Test company",
+                          "updatedAt": "2019-07-04T12:02:05.369Z",
+                          "createdAt": "2019-07-04T12:02:05.369Z"
+                      }
+                    }
         400:
           description: Bad input
           schema:
@@ -116,8 +166,9 @@ paths:
             application/json:
               success: false
               message: Invalid input
+              errorCode: 10
 
-  '/books/': # path parameter in curly braces
+  '/books': # path parameter in curly braces
     get:
       security:
         - tokenAuth: []
@@ -138,6 +189,13 @@ paths:
               ]
 
     post:
+      security:
+        - tokenAuth: []
+
+      summary: Create a new book
+      description: Creates a new book in the database
+      operationId: postBooks
+
       parameters:
         - in: body
           name: body
@@ -145,7 +203,6 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/Book'
-      operationId: postBooks
       responses:
         200:
           description: Success
@@ -155,6 +212,13 @@ paths:
             application/json:
               success: false
               message: Book 'General' already exists
+              data: {
+                      "id": 1,
+                      "name": "Olajide test",
+                      "currency": "NGN",
+                      "createdAt": 1562240661420,
+                      "updatedAt": 1562240661420
+                    }
         400:
           description: Bad input
           schema:
@@ -162,7 +226,8 @@ paths:
           examples:
             application/json:
               success: false
-              message: Book 'Foobar' does not exist
+              message: body requires property \"name\"
+              errorCode: 10
 
   '/books/{bookId}/ledger':
     parameters:
@@ -172,6 +237,8 @@ paths:
         type: integer
         required: true
     post:
+      security:
+        - tokenAuth: []
       summary: Post a new Journal entry
       description: Add a new (balanced) Journal entry to the book
       operationId: postBookEntry
@@ -192,6 +259,8 @@ paths:
             $ref: '#/definitions/PostEntryResponse'
 
     get:
+      security:
+        - tokenAuth: []
       summary: Fetch the ledger
       description: |
         Fetches all transactions for the given book for the dates provided
@@ -261,11 +330,13 @@ paths:
   '/books/{bookId}/accounts':
     parameters:
     - name: bookId
-      description: The book to extract entries from
+      description: The book to extract accounts from
       in: path
       type: integer
       required: true
     get:
+      security:
+        - tokenAuth: []
       summary: List all accounts
       operationId: getAccounts
       produces:
@@ -274,12 +345,12 @@ paths:
         200:
           description: Success
           schema:
-            type: array
-            items:
-              type: string
+            $ref: '#/definitions/AllAccounts'
     post:
+      security:
+        - tokenAuth: []
       summary: Create a new account
-      description: Creates a new account or returns existing of account already exists
+      description: Creates a new account or returns existing if account already exists
       operationId: postAccount
 
       parameters:
@@ -296,6 +367,25 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/NewAccountResponse'
+          examples:
+            application/json:
+              {
+                "success": true,
+                "message": "New account has been created successfully",
+                "account": {
+                    "id": 3,
+                    "accountCode": 234556,
+                    "accountName": "Liability",
+                    "toIncrease": "debit",
+                    "isPorL": true,
+                    "accountType": "Liability",
+                    "subAccountType": "Current liability",
+                    "memo": "This is a current liability account",
+                    "bookId": 1,
+                    "updatedAt": "2019-07-03T21:03:27.052Z",
+                    "createdAt": "2019-07-03T21:03:27.052Z"
+                }
+              }
 
   '/books/{bookId}/transactions':
     parameters:
@@ -305,6 +395,8 @@ paths:
       type: integer
       required: true
     get:
+      security:
+        - tokenAuth: []
       summary: List all transactions for given accounts
       operationId: getTransactions
       parameters:
@@ -350,7 +442,10 @@ paths:
       type: integer
       required: true
     get:
-      summary: Return an account balance
+      security:
+        - tokenAuth: []
+      summary: Get account balance
+      description: Returns an account balance
       operationId: getBalance
       parameters:
       - name: account
@@ -384,7 +479,10 @@ paths:
       type: integer
       required: true
     get:
-      summary: Return a sub account balance
+      security:
+        - tokenAuth: []
+      summary: Fetch sub account balance
+      description: Return a sub account balance
       operationId: getSubAcctBalance
       parameters:
       - name: account
@@ -418,6 +516,51 @@ paths:
           schema:
             $ref: '#/definitions/Balance'
 
+  '/books/{bookId}/subaccttransactions':
+    parameters:
+    - name: bookId
+      description: The book to extract entries from
+      in: path
+      type: integer
+      required: true
+    get:
+      security:
+        - tokenAuth: []
+      summary: Fetch sub account transactions
+      description: Return an array of sub account transactions
+      operationId: getSubAcctTransactions
+      parameters:
+      - name: account
+        description: The account name to get the transactions for
+        in: query
+        type: string
+        required: true
+      - name: accountCode
+        description: The account code to get the transactions for
+        in: query
+        type: string
+        required: true
+      - name: userId
+        description: The id of user who owns the subaccount
+        in: query
+        type: string
+      - name: companyId
+        description: The id of company who owns the subaccount
+        in: query
+        type: string
+      - name: inQuoteCurrency
+        description: If true (default), converts all values to the quote currency first
+        in: query
+        type: boolean
+        required: false
+      produces:
+        - application/json
+      responses: # list of responses
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/SubTransactions'
+
   '/books/{bookId}/tb':
     parameters:
     - name: bookId
@@ -426,7 +569,10 @@ paths:
       type: integer
       required: true
     get:
-      summary: Return a tb; list of all accounts and balance
+      security:
+        - tokenAuth: []
+      summary: Return a trial balance
+      description: Returns a list of all accounts and balances as well as extra information
       operationId: getTb
       parameters:
       - name: startDate
@@ -435,7 +581,7 @@ paths:
         type: string
         required: true
       - name: endDate
-        description: End date for  Profit or Loss and Balance sheet
+        description: End date for Profit or Loss and Balance sheet
         in: query
         type: string
         required: true
@@ -445,7 +591,7 @@ paths:
         200:
           description: Success
           schema:
-            $ref: '#/definitions/Balance'
+            $ref: '#/definitions/TB'
 
   '/books/{bookId}/marktomarket':
     parameters:
@@ -455,6 +601,8 @@ paths:
       type: integer
       required: true
     post:
+      security:
+        - tokenAuth: []
       summary: Mark the account(s) to market
       description: Calculates the unlrealised profit of the given accounts at the exchange rate vector provided
       operationId: postMarkToMarket
@@ -669,24 +817,60 @@ definitions:
         description: New account created object
         type: object
 
+  AllAccounts:
+    type: object
+    properties:
+      success:
+        description: Indicates whether request was succesful
+        type: boolean
+      message:
+        description: Short elaboration of status
+        type: string
+      data:
+        description: Array of all account objects
+        type: array
+        items: {}
+
+  TB:
+    type: object
+    properties:
+      success:
+        description: Indicates whether request was succesful
+        type: boolean
+      message:
+        description: Short elaboration of status
+        type: string
+      data:
+        description: Array of all account with balances and additional information
+        type: array
+        items: {}
+
   Balance:
     type: object
     properties:
-      creditTotal:
-        description: The total value of credits into the account
-        type: number
-      debitTotal:
-        description: The total value of debits into the account
-        type: number
-      balance:
-        description: The current account balabce (credits - debits)
-        type: number
-      currency:
-        description: The nominal currency of the account
-        type: number
-      numTransactions:
-        description: The number of transactions into the account
-        type: number
+      success:
+        description: Indicates whether request was succesful
+        type: boolean
+      message:
+        description: Short elaboration of status
+        type: string
+      data:
+        description: An object containing the following properties - creditTotal, debitTotal, balance, current, number of transactions
+        type: object
+
+  SubTransactions:
+    type: object
+    properties:
+      success:
+        description: Indicates whether request was succesful
+        type: boolean
+      message:
+        description: Short elaboration of status
+        type: string
+      data:
+        description: An array of objects containing individual transaction entries 
+        type: array
+        items: {}
 
   UnrealisedProfit:
     type: object
@@ -721,6 +905,28 @@ definitions:
       password:
         description: Password of user to be registered
         type: string
+      joinDate:
+        description: Join date of user to be registered
+        type: string
+      memberId:
+        description: MemberID of user to be registered
+        type: string
+      nextSavingsDate:
+        description: Next savings date of user to be registered
+        type: string
+      nextSavingsAmount:
+        description: Next savings amount of user to be registered
+        type: string
+      position:
+        description: Executive position of user to be registered
+        type: string
+      phone:
+        description: Phone number of user to be registered
+        type: string
+      status:
+        description: Status of user to be registered
+        type: string
+        
 
   PostUserSignin:
     type: object
