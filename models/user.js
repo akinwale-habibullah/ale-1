@@ -12,6 +12,15 @@ const User = sequelize.define('user', {
   email: { type: Sequelize.STRING, notNull: true },
   userName: { type: Sequelize.STRING, notNull: true },
   password: { type: Sequelize.STRING, notNull: true },
+  joinDate: { type: Sequelize.STRING },
+  memberId: { type: Sequelize.STRING, notNull: true },
+  nextSavingsDate: { type: Sequelize.STRING },
+  nextSavingsAmount: { type: Sequelize.STRING },
+  position: { type: Sequelize.STRING },
+  phone: { type: Sequelize.STRING },
+  status: { type: Sequelize.STRING },
+  isGuarantor: { type: Sequelize.BOOLEAN },
+  
 });
 
 /**
@@ -21,9 +30,17 @@ const User = sequelize.define('user', {
  * @param email The email of the candidate user
  * @param userName The username of the candidate user
  * @param password The password of the candidate user
+ * @param joinDate The date the candidate user joined the cooperative
+ * @param memberId The candidate user's member ID
+ * @param nextSavingsDate The next due date of the candidate user
+ * @param nextSavingsAmount The next savings amount of the candidate user
+ * @param position The postion of the candidate user
+ * @param phone The phone number of the candidate user
+ * @param status The status of the candidate user
+ * 
  */
-User.getOrCreateUser = function (firstName, lastName, email, userName, password) {
-  return User.findOrCreate({ where: { email }, defaults: { firstName, lastName, userName, password } })
+User.getOrCreateUser = function (firstName, lastName, email, userName, password, joinDate, memberId, nextSavingsDate, nextSavingsAmount, position, phone, status, isGuarantor) {
+  return User.findOrCreate({ where: { email }, defaults: { firstName, lastName, userName, password, joinDate, memberId, nextSavingsDate, nextSavingsAmount, position, phone, status, isGuarantor } })
     .then(result => {
       if (!result || result.length != 2) {
         return sequelize.Promise.reject(new AleError('User query failed to return expected result', codes.DatabaseQueryError));
