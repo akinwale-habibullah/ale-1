@@ -110,6 +110,31 @@ Book.prototype.getBalance = function (query, inQuoteCurrency = false) {
 };
 
 /**
+ * Returns a promise of all transactions of the given account.
+ * @param query
+ * @param query.account {string|Array} [acct, subacct, subsubacct]
+ * @param query.startDate {string|number} Anything parseable by new Date()
+ * @param query.endDate {string|number} Anything parseable by new Date()
+ * @param query.perPage {number} Limit results to perPage
+ * @param query.page {number} Return page number
+ * @param inQuoteCurrency boolean - whether to convert balance to the quote currency or not (default: false)
+ * @return {creditTotal, debitTotal, balance, currency, numTransactions}
+ */
+Book.prototype.allTransactions = function (query, inQuoteCurrency = false) {
+    query = parseQuery(this.getDataValue('id'), query);
+    return Transaction.findAll(query).then(result => {
+        if (!result) {
+            return {
+                balance: 0,
+                notes: 0
+            };
+        }
+        return result
+
+    });
+};
+
+/**
  * Return all journal entries ordered by time for a given book (subject to the constraints passed in the query)
  * @param query
  * @param query.startDate {string|number} Anything parseable by new Date()
@@ -169,6 +194,16 @@ Book.prototype.listAccounts = function () {
             }
         }
         return Array.from(new Set(final)); // uniques
+    });
+};
+
+/**
+ * Return all accounts related to the book
+ * @return {Array} of Accounts
+ */
+Book.prototype.listAllAccounts = function () {
+    return Account.getAccounts(this.getDataValue('id')).then(results => {
+        return results
     });
 };
 

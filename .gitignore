@@ -63,3 +63,5 @@ typings/
 *.iml
 out/
 
+### Vs code files
+.vscode
