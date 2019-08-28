@@ -2,7 +2,7 @@
   "name": "a.l.e",
   "version": "1.0.0",
   "description": "Double accounting package based on node.js + sequelize",
-  "main": "index.js",
+  "main": "server.js",
   "repository": "git@github.com:CjS77/ale.git",
   "author": "Cayle Sharrock <cayle@coinbase.com>",
   "license": "Apache-2.0",
@@ -12,7 +12,7 @@
     "build": "node ./scripts/build.js",
     "swagger": "swagger-repo",
     "test:swagger": "swagger-repo validate",
-    "start:dev": "gulp serve",
+    "start:dev": "nodemon server.js --verbose --ignore 'ale/lib/handlers*'",
     "start": "node server",
     "deploy-branch": "node ./scripts/deploy-branch.js"
   },
@@ -53,6 +53,7 @@
   },
   "devDependencies": {
     "mocha": "^3.5.3",
+    "nodemon": "1.19.1",
     "pg": "^7.3.0",
     "pg-hstore": "^2.3.2",
     "supertest": "3.0.0"

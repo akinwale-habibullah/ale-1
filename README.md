@@ -43,6 +43,8 @@ SECRET=olajide
 ```
 - Run `yarn install` to install all packages required
 - Run `yarn start` to start the server
+- To start the server in development node, use `yarn start:dev`. However, note that due to the fact that swagger-routes rewrites files in 'ale/lib/handlers*', this folder has been ignored. Therefore, to restart the app after changes to any file
+in this location, enter `rs` in terminal and enter.
 
 ## Changelog
 * **v1.0.0** REST API release
