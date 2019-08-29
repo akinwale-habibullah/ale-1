@@ -127,6 +127,155 @@ paths:
               message: Invalid input
               errorCode: 10
 
+  '/users': 
+      get:
+        security:
+        - tokenAuth: []
+        summary: Get user details
+        description: Gets all details of a user available in the database
+        operationId: getUser
+
+        parameters:
+          - in: header
+            name: x-access-token
+            description: user token
+            required: true
+            schema:
+              type: string
+
+        produces:
+          - application/json
+
+        responses:
+          200:
+            description: Success
+            examples:
+              application/json:
+                success: true
+                message: User data returned
+                data: {
+                        id: 3,
+                        firstName: "OFatimah",
+                        lastName: "Ayinla",
+                        email: "ayinlaolajide@yahooo.com",
+                        userName: "Olajide",
+                        joinDate: "22 April 2018",
+                        memberId: "0909123",
+                        nextSavingsDate: "22 April 2018",
+                        nextSavingsAmount: "20,000",
+                        position: "Secretary",
+                        phone: "081856646464",
+                        status: "active",
+                        isGuarantor: false,
+                        createdAt: "2019-07-07T10:26:07.043Z",
+                        updatedAt: "2019-07-07T10:26:07.043Z"
+                        }
+          400:
+            description: Bad input
+            schema:
+              $ref: '#/definitions/ErrorResponse'
+            examples:
+              application/json:
+                success: false
+                message: Invalid input
+                errorCode: 10
+
+      post:
+        security:
+        - tokenAuth: []
+        summary: Edit user details
+        description: Edit user details in database
+        operationId: editUser
+
+        parameters:
+          - in: query
+            name: email
+            description: email address of user to change details for
+            required: true
+            schema:
+              type: string
+
+        produces:
+          - application/json
+
+        responses:
+          200:
+            description: Success
+            examples:
+              application/json:
+                success: true
+                message: User data updated
+                data: {
+                        id: 3,
+                        firstName: "OFatimah",
+                        lastName: "Ayinla",
+                        email: "ayinlaolajide@yahooo.com",
+                        userName: "Olajide",
+                        joinDate: "22 April 2018",
+                        memberId: "0909123",
+                        nextSavingsDate: "22 April 2018",
+                        nextSavingsAmount: "20,000",
+                        position: "Secretary",
+                        phone: "081856646464",
+                        status: "active",
+                        isGuarantor: false,
+                        createdAt: "2019-07-07T10:26:07.043Z",
+                        updatedAt: "2019-07-07T10:26:07.043Z"
+                        }
+          400:
+            description: Bad input
+            schema:
+              $ref: '#/definitions/ErrorResponse'
+            examples:
+              application/json:
+                success: false
+                message: Invalid input
+                errorCode: 10
+
+  '/members': 
+      get:
+        security:
+        - tokenAuth: []
+        summary: Get all member details
+        description: Gets all details of members available in the database
+        operationId: getMembers
+
+        parameters:
+          - in: header
+            name: x-access-token
+            description: user token
+            required: true
+            schema:
+              type: string
+
+        produces:
+          - application/json
+
+        responses:
+          200:
+            description: Success
+            examples:
+              application/json:
+                success: true
+                message: All user data returned
+                data: [{
+                        id: 3,
+                        firstName: "OFatimah",
+                        lastName: "Ayinla",
+                        email: "ayinlaolajide@yahooo.com",
+                        userName: "Olajide",
+                        joinDate: "22 April 2018",
+                        memberId: "0909123",
+                        nextSavingsDate: "22 April 2018",
+                        nextSavingsAmount: "20,000",
+                        position: "Secretary",
+                        phone: "081856646464",
+                        status: "active",
+                        isGuarantor: false,
+                        createdAt: "2019-07-07T10:26:07.043Z",
+                        updatedAt: "2019-07-07T10:26:07.043Z"
+                        }]
+
   '/company': 
     post:
       summary: Create a new company
@@ -975,3 +1124,4 @@ definitions:
       token:
         description: User token
         type: string
+
