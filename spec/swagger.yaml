@@ -317,6 +317,49 @@ paths:
               message: Invalid input
               errorCode: 10
 
+  '/loans': 
+    post:
+      security:
+      - tokenAuth: []
+      summary: Create a new loan request
+      description: Creates a new loan request in the database
+      operationId: postLoans
+
+      parameters:
+        - in: body
+          name: body
+          description: Loan details
+          required: true
+          schema:
+            $ref: '#/definitions/PostLoan'
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/CompanyObject'
+          examples:
+            application/json:
+              success: true
+              message: New company has been created successfully
+              data: {
+                      "isNew": true,
+                      "company": {
+                          "id": 1,
+                          "name": "Test company",
+                          "updatedAt": "2019-07-04T12:02:05.369Z",
+                          "createdAt": "2019-07-04T12:02:05.369Z"
+                      }
+                    }
+        400:
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: Invalid input
+              errorCode: 10
+
   '/books': # path parameter in curly braces
     get:
       security:
@@ -1124,4 +1167,34 @@ definitions:
       token:
         description: User token
         type: string
+
+  PostLoan:
+    type: object
+    required:
+      - loanAmount
+      - tenure
+      - guarantor1
+      - guarantor2
+    properties:
+      loanAmount:
+        description: Loan amount requested
+        type: float
+      interest:
+        description: Calculated interest on loan
+        type: float
+      fee:
+        description: Calculated fee on loan
+        type: float
+      tenure:
+        description: Count of loan repayment instanced, monthly preferrably
+        type: integer
+      comments:
+        description: Applicant's comments with the application
+        type: string
+      guarantor1:
+        description: First nominated guarantor
+        type: integer
+      guarantor2:
+        description: Second nominated guarantor
+        type: integer
 
