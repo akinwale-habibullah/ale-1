@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 const sequelize = require('./connection');
+const Op = require('Sequelize').Op;
 const { AleError, codes } = require('../lib/errors');
 const User = require('./user');
 
@@ -107,6 +108,23 @@ const Loan = sequelize.define('loan', {
   type: { type: Sequelize.STRING },
 });
 
-Loan.belongsTo(User, {as: 'debtor'});
+Loan.belongsTo(User, { as: 'debtor' });
+
+
+/**
+ * Return count of existing guarantees
+ *
+ * @param {integer} id - User id of guarantor to run check on
+ * 
+ */
+
+Loan.checkExistingGuarantees = async function (id) {
+  const numberOfGuarantees = await Loan.count({
+    where: {
+      [Op.or]: [{ guarantor1: id }, { guarantor2: id }, { guarantor3: id }]
+    }
+  })
+  return numberOfGuarantees
+};
 
 module.exports = Loan;
