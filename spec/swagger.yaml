@@ -335,8 +335,6 @@ paths:
       responses:
         200:
           description: Success
-          schema:
-            $ref: '#/definitions/CompanyObject'
           examples:
             application/json:
               success: true
@@ -359,6 +357,55 @@ paths:
               success: false
               message: Invalid input
               errorCode: 10
+
+    patch:
+      security:
+      - tokenAuth: []
+      summary: Approve a loan request
+      description: Approves a loan request already in database
+      operationId: approveLoans
+
+      parameters:
+        - in: query
+          name: loanId
+          description: Id of loan to be processed
+          required: true
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json:
+              success: true
+              message: First level rejection has been included
+              data: { 
+                      id: 15,
+                      loanAmount: 10,
+                      interest: null,
+                      fees: null,
+                      tenure: 5,
+                      comments: I need this loan immediately,
+                      repayment: null,
+                      guarantor1: 1,
+                      guarantor2: 6,
+                      guarantor3: null,
+                      approver1: 8,
+                      approver2: null,
+                      approver3: null,
+                      rejecter1: 8,
+                      rejecter2: null,
+                      rejecter3: null,
+                      status: approved,
+                      type: cash loan,
+                      createdAt: '2019-09-01T14:13:00.559Z',
+                      updatedAt: '2019-09-02T06:50:47.015Z',
+                      debtorId: 1
+                    }
+        400:
+          description: Bad input
+          examples:
+            application/json:
+              success: false
+              message: Loan with selected ID does not exist
 
   '/books': # path parameter in curly braces
     get:
@@ -1108,7 +1155,7 @@ definitions:
         type: string
       nextSavingsAmount:
         description: Next savings amount of user to be registered
-        type: string
+        type: float
       position:
         description: Executive position of user to be registered
         type: string
