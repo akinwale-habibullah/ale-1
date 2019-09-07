@@ -190,8 +190,8 @@ paths:
         parameters:
           - in: query
             name: email
-            description: email address of user to change details for
-            required: true
+            description: email address of user to change details for. Only required when requester is admin and not account owner.
+            required: false
             schema:
               type: string
 
@@ -221,6 +221,45 @@ paths:
                         isGuarantor: false,
                         createdAt: "2019-07-07T10:26:07.043Z",
                         updatedAt: "2019-07-07T10:26:07.043Z"
+                        }
+          400:
+            description: Bad input
+            schema:
+              $ref: '#/definitions/ErrorResponse'
+            examples:
+              application/json:
+                success: false
+                message: Invalid input
+                errorCode: 10
+
+  '/savingsandloans': 
+      get:
+        security:
+        - tokenAuth: []
+        summary: Get savings & loans balance and history
+        description: Gets the balance and history of a user's savings and loans from the designated accounts
+        operationId: getSavingsAndLoans
+
+        parameters:
+          - in: header
+            name: x-access-token
+            description: user token
+            required: true
+            schema:
+              type: string
+
+        produces:
+          - application/json
+
+        responses:
+          200:
+            description: Success
+            examples:
+              application/json:
+                success: true
+                message: User data returned
+                data: {
+                        id: To be updated,
                         }
           400:
             description: Bad input
@@ -269,6 +308,58 @@ paths:
                         nextSavingsDate: "22 April 2018",
                         nextSavingsAmount: "20,000",
                         position: "Secretary",
+                        phone: "081856646464",
+                        status: "active",
+                        isGuarantor: false,
+                        createdAt: "2019-07-07T10:26:07.043Z",
+                        updatedAt: "2019-07-07T10:26:07.043Z"
+                        }]
+
+  '/exco': 
+      get:
+        security:
+        - tokenAuth: []
+        summary: Get exco details
+        description: Gets important exco details to display on website 
+        operationId: getExco
+
+        produces:
+          - application/json
+
+        responses:
+          200:
+            description: Success
+            examples:
+              application/json:
+                success: true
+                message: All user data returned
+                data: [{
+                        id: 3,
+                        firstName: "OFatimah",
+                        lastName: "Ayinla",
+                        email: "ayinlaolajide@yahooo.com",
+                        userName: "Olajide",
+                        joinDate: "22 April 2018",
+                        memberId: "0909123",
+                        nextSavingsDate: "22 April 2018",
+                        nextSavingsAmount: "20,000",
+                        position: "secretary",
+                        phone: "081856646464",
+                        status: "active",
+                        isGuarantor: false,
+                        createdAt: "2019-07-07T10:26:07.043Z",
+                        updatedAt: "2019-07-07T10:26:07.043Z"
+                        }, {
+                        id: 4,
+                        firstName: "OFatimah",
+                        lastName: "Ayinla",
+                        email: "ayinlaolajide@yahooo.com",
+                        userName: "Olajide",
+                        joinDate: "22 April 2018",
+                        memberId: "0909123",
+                        nextSavingsDate: "22 April 2018",
+                        nextSavingsAmount: "20,000",
+                        position: "president",
                         phone: "081856646464",
                         status: "active",
                         isGuarantor: false,
@@ -1152,7 +1243,7 @@ definitions:
         type: string
       nextSavingsDate:
         description: Next savings date of user to be registered
-        type: string
+        type: integer
       nextSavingsAmount:
         description: Next savings amount of user to be registered
         type: float
