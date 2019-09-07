@@ -14,10 +14,14 @@
  */
 
 const dotenv = require('dotenv');
+var cors = require('cors')
 dotenv.config();
 const app = require('./lib/server');
 const port = process.env.ALE_PORT || 8813;
 const sequelize = require('./models/connection');
+
+app.use(cors())
+app.options('*', cors())
 
 sequelize.sync().then(
 

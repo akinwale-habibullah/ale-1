@@ -9,18 +9,19 @@ const { compareHashAndTextPassword } = require('../lib/helpers/auth');
 const User = sequelize.define('user', {
   firstName: { type: Sequelize.STRING, notNull: true },
   lastName: { type: Sequelize.STRING, notNull: true },
-  email: { type: Sequelize.STRING, notNull: true },
+  email: { type: Sequelize.STRING, notNull: true, unique: { msg: 'Email already exists' } },
   userName: { type: Sequelize.STRING, notNull: true },
   password: { type: Sequelize.STRING, notNull: true },
   isAdmin: { type: Sequelize.BOOLEAN, notNull: true },
   joinDate: { type: Sequelize.STRING },
   memberId: { type: Sequelize.STRING, notNull: true, unique: { msg: 'MemberId already exists' } },
-  nextSavingsDate: { type: Sequelize.STRING },
+  nextSavingsDate: { type: Sequelize.INTEGER },
   nextSavingsAmount: { type: Sequelize.FLOAT },
   position: { type: Sequelize.STRING },
   phone: { type: Sequelize.STRING },
   status: { type: Sequelize.STRING },
   isGuarantor: { type: Sequelize.BOOLEAN },
+  organization: { type: Sequelize.STRING },
 
 });
 
@@ -38,10 +39,12 @@ const User = sequelize.define('user', {
  * @param position The postion of the candidate user
  * @param phone The phone number of the candidate user
  * @param status The status of the candidate user
+ * @param isGuarantor If the user is currently a guarantor
+ * @param organization The organization of the user
  * 
  */
-User.getOrCreateUser = function (firstName, lastName, email, userName, password, isAdmin, joinDate, memberId, nextSavingsDate, nextSavingsAmount, position, phone, status, isGuarantor) {
-  return User.findOrCreate({ where: { email }, defaults: { firstName, lastName, userName, password, isAdmin, joinDate, memberId, nextSavingsDate, nextSavingsAmount, position, phone, status, isGuarantor } })
+User.getOrCreateUser = function (firstName, lastName, email, userName, password, isAdmin, joinDate, memberId, nextSavingsDate, nextSavingsAmount, position, phone, status, isGuarantor, organization) {
+  return User.findOrCreate({ where: { email }, defaults: { firstName, lastName, userName, password, isAdmin, joinDate, memberId, nextSavingsDate, nextSavingsAmount, position, phone, status, isGuarantor, organization } })
     .then(result => {
       if (!result || result.length != 2) {
         return sequelize.Promise.reject(new AleError('User query failed to return expected result', codes.DatabaseQueryError));
@@ -58,7 +61,7 @@ User.getOrCreateUser = function (firstName, lastName, email, userName, password,
  * @param password The password of the user
  */
 User.getUserByAuth = function (email, password) {
-  return User.find({ where: { email } })
+  return User.find({ where: { email }, attributes: ['id', 'firstName', 'lastName', 'userName', 'email', 'organization', 'password'] })
     .then(result => {
       if (!result) {
         return sequelize.Promise.reject(new AleError('User with email does not exist', codes.DatabaseQueryError));
@@ -94,7 +97,9 @@ User.getUserDetails = async function (userId) {
  * @param userEmail The name of the user
  */
 User.updateDetails = async function (
-  userEmail,
+  id,
+  isAdmin,
+  email,
   newFirstName,
   newLastName,
   newJoinDate,
@@ -107,8 +112,16 @@ User.updateDetails = async function (
   newIsGuarantor,
 ) {
   try {
+    let priorDetails;
+    let searchKey;
 
-    const priorDetails = await User.find({ where: { email: userEmail } })
+    if (isAdmin) {
+      priorDetails = await User.findOne({ where: { email } });
+      searchKey = { email: email };
+    } else {
+      priorDetails = await User.findOne({ where: { id } });
+      searchKey = { id: id };
+    }
     const newIsGuarantorObj = { isGuarantor: newIsGuarantor }
     const result = await User.update(
       {
@@ -119,11 +132,12 @@ User.updateDetails = async function (
         status: newStatus || priorDetails.status, isGuarantor: newIsGuarantorObj["isGuarantor"] === undefined ? priorDetails.isGuarantor : newIsGuarantorObj["isGuarantor"],
       },
       {
-        where: { email: userEmail },
+        where: { ...searchKey },
         returning: true,
-        plain: true
+        plain: true,
       }
     );
+
 
     if (!result) {
       return sequelize.Promise.reject(new AleError('Unable to update record at this time', codes.DatabaseQueryError));
