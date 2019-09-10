@@ -13,16 +13,18 @@ const User = sequelize.define('user', {
   userName: { type: Sequelize.STRING, notNull: true },
   password: { type: Sequelize.STRING, notNull: true },
   isAdmin: { type: Sequelize.BOOLEAN, notNull: true },
-  joinDate: { type: Sequelize.STRING },
+  joinDate: { type: Sequelize.DATE },
   memberId: { type: Sequelize.STRING, notNull: true, unique: { msg: 'MemberId already exists' } },
+  prevSavingsDate: { type: Sequelize.INTEGER },
+  prevSavingsAmount: { type: Sequelize.FLOAT },
   nextSavingsDate: { type: Sequelize.INTEGER },
   nextSavingsAmount: { type: Sequelize.FLOAT },
+  savingsDateAndAmountApproval: { type: Sequelize.STRING },
   position: { type: Sequelize.STRING },
   phone: { type: Sequelize.STRING },
   status: { type: Sequelize.STRING },
   isGuarantor: { type: Sequelize.BOOLEAN },
   organization: { type: Sequelize.STRING },
-
 });
 
 /**
@@ -61,7 +63,7 @@ User.getOrCreateUser = function (firstName, lastName, email, userName, password,
  * @param password The password of the user
  */
 User.getUserByAuth = function (email, password) {
-  return User.find({ where: { email }, attributes: ['id', 'firstName', 'lastName', 'userName', 'email', 'organization', 'password'] })
+  return User.find({ where: { email }, attributes: ['id', 'firstName', 'lastName', 'userName', 'email', 'organization', 'password', 'isAdmin', 'position'] })
     .then(result => {
       if (!result) {
         return sequelize.Promise.reject(new AleError('User with email does not exist', codes.DatabaseQueryError));
@@ -94,7 +96,7 @@ User.getUserDetails = async function (userId) {
 
 /**
  * Update details for an existing user
- * @param userEmail The name of the user
+ * 
  */
 User.updateDetails = async function (
   id,
@@ -104,8 +106,11 @@ User.updateDetails = async function (
   newLastName,
   newJoinDate,
   newMemberId,
+  newPrevSavingsDate,
+  newPrevSavingsAmount,
   newNextSavingsDate,
   newNextSavingsAmount,
+  newsavingsDateAndAmountApproval,
   newPosition,
   newPhone,
   newStatus,
@@ -115,19 +120,77 @@ User.updateDetails = async function (
     let priorDetails;
     let searchKey;
 
-    if (isAdmin) {
-      priorDetails = await User.findOne({ where: { email } });
-      searchKey = { email: email };
-    } else {
-      priorDetails = await User.findOne({ where: { id } });
-      searchKey = { id: id };
-    }
+    // if (isAdmin) {
+    //   priorDetails = await User.findOne({ where: { email } });
+    //   searchKey = { email: email };
+    // } else {
+    priorDetails = await User.findOne({ where: { id } });
+    searchKey = { id: id };
+    // }
     const newIsGuarantorObj = { isGuarantor: newIsGuarantor }
     const result = await User.update(
       {
         firstName: newFirstName || priorDetails.firstName, lastName: newLastName || priorDetails.lastName,
         joinDate: newJoinDate || priorDetails.joinDate, memberId: newMemberId || priorDetails.memberId,
+        prevSavingsDate: newPrevSavingsDate || priorDetails.newPrevSavingsAmount, prevSavingsAmount: newPrevSavingsAmount || priorDetails.newPrevSavingsAmount,
         nextSavingsDate: newNextSavingsDate || priorDetails.nextSavingsDate, nextSavingsAmount: newNextSavingsAmount || priorDetails.nextSavingsAmount,
+        savingsDateAndAmountApproval: newsavingsDateAndAmountApproval || priorDetails.newsavingsDateAndAmountApproval,
+        position: newPosition || priorDetails.position, phone: newPhone || priorDetails.phone,
+        status: newStatus || priorDetails.status, isGuarantor: newIsGuarantorObj["isGuarantor"] === undefined ? priorDetails.isGuarantor : newIsGuarantorObj["isGuarantor"],
+      },
+      {
+        where: { ...searchKey },
+        returning: true,
+        plain: true,
+      }
+    );
+
+
+    if (!result) {
+      return sequelize.Promise.reject(new AleError('Unable to update record at this time', codes.DatabaseQueryError));
+    }
+    return result[1];
+  } catch (error) {
+    return sequelize.Promise.reject(new AleError(error, codes.DatabaseQueryError));
+  }
+};
+
+/**
+ * Update details for an existing user by admin
+ * 
+ */
+User.adminUpdateDetails = async function (
+  id,
+  isAdmin,
+  email,
+  newFirstName,
+  newLastName,
+  newJoinDate,
+  newMemberId,
+  newPrevSavingsDate,
+  newPrevSavingsAmount,
+  newNextSavingsDate,
+  newNextSavingsAmount,
+  newsavingsDateAndAmountApproval,
+  newPosition,
+  newPhone,
+  newStatus,
+  newIsGuarantor,
+) {
+  try {
+    let priorDetails;
+    let searchKey;
+
+    priorDetails = await User.findOne({ where: { email } });
+    searchKey = { email: email };
+    const newIsGuarantorObj = { isGuarantor: newIsGuarantor }
+    const result = await User.update(
+      {
+        firstName: newFirstName || priorDetails.firstName, lastName: newLastName || priorDetails.lastName,
+        joinDate: newJoinDate || priorDetails.joinDate, memberId: newMemberId || priorDetails.memberId,
+        prevSavingsDate: newPrevSavingsDate || priorDetails.newPrevSavingsAmount, prevSavingsAmount: newPrevSavingsAmount || priorDetails.newPrevSavingsAmount,
+        nextSavingsDate: newNextSavingsDate || priorDetails.nextSavingsDate, nextSavingsAmount: newNextSavingsAmount || priorDetails.nextSavingsAmount,
+        savingsDateAndAmountApproval: newsavingsDateAndAmountApproval || priorDetails.newsavingsDateAndAmountApproval,
         position: newPosition || priorDetails.position, phone: newPhone || priorDetails.phone,
         status: newStatus || priorDetails.status, isGuarantor: newIsGuarantorObj["isGuarantor"] === undefined ? priorDetails.isGuarantor : newIsGuarantorObj["isGuarantor"],
       },
