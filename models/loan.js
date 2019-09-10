@@ -14,101 +14,110 @@ const Loan = sequelize.define('loan', {
   tenure: { type: Sequelize.INTEGER },
   comments: { type: Sequelize.STRING },
   repayment: { type: Sequelize.INTEGER },
-  guarantor1: {
-    type: Sequelize.INTEGER,
-    references: {
-      // This is a reference to another model
-      model: User,
+  // guarantor1Id: {
+  //   type: Sequelize.INTEGER,
+  //   references: {
+  //     // This is a reference to another model
+  //     model: User,
 
-      // This is the column name of the referenced model
-      key: 'id',
-    }
-  },
-  guarantor2: {
-    type: Sequelize.INTEGER,
-    references: {
-      // This is a reference to another model
-      model: User,
+  //     // This is the column name of the referenced model
+  //     key: 'id',
+  //   }
+  // },
+  // guarantor2Id: {
+  //   type: Sequelize.INTEGER,
+  //   references: {
+  //     // This is a reference to another model
+  //     model: User,
 
-      // This is the column name of the referenced model
-      key: 'id',
-    }
-  },
-  guarantor3: {
-    type: Sequelize.INTEGER,
-    references: {
-      // This is a reference to another model
-      model: User,
+  //     // This is the column name of the referenced model
+  //     key: 'id',
+  //   }
+  // },
+  // guarantor3Id: {
+  //   type: Sequelize.INTEGER,
+  //   references: {
+  //     // This is a reference to another model
+  //     model: User,
 
-      // This is the column name of the referenced model
-      key: 'id',
-    }
-  },
-  approver1: {
-    type: Sequelize.INTEGER,
-    references: {
-      // This is a reference to another model
-      model: User,
+  //     // This is the column name of the referenced model
+  //     key: 'id',
+  //   }
+  // },
+  // approver1Id: {
+  //   type: Sequelize.INTEGER,
+  //   references: {
+  //     // This is a reference to another model
+  //     model: User,
 
-      // This is the column name of the referenced model
-      key: 'id',
-    }
-  },
-  approver2: {
-    type: Sequelize.INTEGER,
-    references: {
-      // This is a reference to another model
-      model: User,
+  //     // This is the column name of the referenced model
+  //     key: 'id',
+  //   }
+  // },
+  // approver2Id: {
+  //   type: Sequelize.INTEGER,
+  //   references: {
+  //     // This is a reference to another model
+  //     model: User,
 
-      // This is the column name of the referenced model
-      key: 'id',
-    }
-  },
-  approver3: {
-    type: Sequelize.INTEGER,
-    references: {
-      // This is a reference to another model
-      model: User,
+  //     // This is the column name of the referenced model
+  //     key: 'id',
+  //   }
+  // },
+  // approver3Id: {
+  //   type: Sequelize.INTEGER,
+  //   references: {
+  //     // This is a reference to another model
+  //     model: User,
 
-      // This is the column name of the referenced model
-      key: 'id',
-    }
-  },
-  rejecter1: {
-    type: Sequelize.INTEGER,
-    references: {
-      // This is a reference to another model
-      model: User,
+  //     // This is the column name of the referenced model
+  //     key: 'id',
+  //   }
+  // },
+  // rejecter1Id: {
+  //   type: Sequelize.INTEGER,
+  //   references: {
+  //     // This is a reference to another model
+  //     model: User,
 
-      // This is the column name of the referenced model
-      key: 'id',
-    }
-  },
-  rejecter2: {
-    type: Sequelize.INTEGER,
-    references: {
-      // This is a reference to another model
-      model: User,
+  //     // This is the column name of the referenced model
+  //     key: 'id',
+  //   }
+  // },
+  // rejecter2Id: {
+  //   type: Sequelize.INTEGER,
+  //   references: {
+  //     // This is a reference to another model
+  //     model: User,
 
-      // This is the column name of the referenced model
-      key: 'id',
-    }
-  },
-  rejecter3: {
-    type: Sequelize.INTEGER,
-    references: {
-      // This is a reference to another model
-      model: User,
+  //     // This is the column name of the referenced model
+  //     key: 'id',
+  //   }
+  // },
+  // rejecter3Id: {
+  //   type: Sequelize.INTEGER,
+  //   references: {
+  //     // This is a reference to another model
+  //     model: User,
 
-      // This is the column name of the referenced model
-      key: 'id',
-    }
-  },
+  //     // This is the column name of the referenced model
+  //     key: 'id',
+  //   }
+  // },
   status: { type: Sequelize.STRING },
   type: { type: Sequelize.STRING },
 });
 
 Loan.belongsTo(User, { as: 'debtor' });
+Loan.belongsTo(User, { as: 'guarantor1' });
+Loan.belongsTo(User, { as: 'guarantor2' });
+Loan.belongsTo(User, { as: 'guarantor3' });
+Loan.belongsTo(User, { as: 'approver1' });
+Loan.belongsTo(User, { as: 'approver2' });
+Loan.belongsTo(User, { as: 'approver3' });
+Loan.belongsTo(User, { as: 'rejecter1' });
+Loan.belongsTo(User, { as: 'rejecter2' });
+Loan.belongsTo(User, { as: 'rejecter3' });
 
 
 /**
@@ -121,7 +130,7 @@ Loan.belongsTo(User, { as: 'debtor' });
 Loan.checkExistingGuarantees = async function (id) {
   const numberOfGuarantees = await Loan.count({
     where: {
-      [Op.or]: [{ guarantor1: id }, { guarantor2: id }, { guarantor3: id }]
+      [Op.or]: [{ guarantor1Id: id }, { guarantor2Id: id }, { guarantor3Id: id }]
     }
   })
   return numberOfGuarantees

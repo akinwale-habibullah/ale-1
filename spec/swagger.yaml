@@ -367,6 +367,26 @@ paths:
                         updatedAt: "2019-07-07T10:26:07.043Z"
                         }]
 
+  '/stats': 
+      get:
+        security:
+        - tokenAuth: []
+        summary: Get cooperative statistics
+        description: Gets important cooperative statistics such as balances and member strenght 
+        operationId: getStats
+
+        produces:
+          - application/json
+
+        responses:
+          200:
+            description: Success
+            examples:
+              application/json:
+                success: true
+                message: All user data returned
+                data: [{stats: stats}]
+
   '/company': 
     post:
       summary: Create a new company
@@ -408,7 +428,52 @@ paths:
               message: Invalid input
               errorCode: 10
 
+  '/savings': 
+      get:
+        security:
+        - tokenAuth: []
+        summary: Get pending savings change requests
+        description: Gets pending savings date and amount change requests
+        operationId: getSavingsChange
+
+        produces:
+          - application/json
+
+        responses:
+          200:
+            description: Success
+            examples:
+              application/json:
+                success: true
+                message: All user data returned
+                data: [{stats: stats}]
+
   '/loans': 
+    get:
+      security:
+      - tokenAuth: []
+      summary: Get all existing loan requests
+      description: Returns all exsiting loan requests in the database
+      operationId: getLoans
+
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json:
+              success: true
+              message: All loans returned
+              data: {}
+        400:
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: Invalid input
+              errorCode: 10
+
     post:
       security:
       - tokenAuth: []
@@ -476,15 +541,15 @@ paths:
                       tenure: 5,
                       comments: I need this loan immediately,
                       repayment: null,
-                      guarantor1: 1,
-                      guarantor2: 6,
-                      guarantor3: null,
-                      approver1: 8,
-                      approver2: null,
-                      approver3: null,
-                      rejecter1: 8,
-                      rejecter2: null,
-                      rejecter3: null,
+                      guarantor1Id: 1,
+                      guarantor2Id: 6,
+                      guarantor3Id: null,
+                      approver1Id: 8,
+                      approver2Id: null,
+                      approver3Id: null,
+                      rejecter1Id: 8,
+                      rejecter2Id: null,
+                      rejecter3Id: null,
                       status: approved,
                       type: cash loan,
                       createdAt: '2019-09-01T14:13:00.559Z',
@@ -1311,8 +1376,8 @@ definitions:
     required:
       - loanAmount
       - tenure
-      - guarantor1
-      - guarantor2
+      - guarantor1Id
+      - guarantor2Id
     properties:
       loanAmount:
         description: Loan amount requested
@@ -1329,10 +1394,10 @@ definitions:
       comments:
         description: Applicant's comments with the application
         type: string
-      guarantor1:
+      guarantor1Id:
         description: First nominated guarantor
         type: integer
-      guarantor2:
+      guarantor2Id:
         description: Second nominated guarantor
         type: integer
 
