@@ -92,6 +92,22 @@ User.getUserDetails = async function (userId) {
   }
 };
 
+/**
+ * Gets details for an existing user by memberId
+ * @param memberId The name of the user
+ */
+User.getUserDetailsByMemberId = async function (memberId) {
+  try {
+    const result = await User.find({ attributes: { exclude: ['password'] }, where: { memberId } });
+    if (!result) {
+      return sequelize.Promise.reject(new AleError('User with member id does not exist', codes.DatabaseQueryError));
+    }
+    return result;
+  } catch (error) {
+    return sequelize.Promise.reject(new AleError(error, codes.DatabaseQueryError));
+  }
+};
+
 
 
 /**
@@ -100,8 +116,6 @@ User.getUserDetails = async function (userId) {
  */
 User.updateDetails = async function (
   id,
-  isAdmin,
-  email,
   newFirstName,
   newLastName,
   newJoinDate,
@@ -117,16 +131,7 @@ User.updateDetails = async function (
   newIsGuarantor,
 ) {
   try {
-    let priorDetails;
-    let searchKey;
-
-    // if (isAdmin) {
-    //   priorDetails = await User.findOne({ where: { email } });
-    //   searchKey = { email: email };
-    // } else {
-    priorDetails = await User.findOne({ where: { id } });
-    searchKey = { id: id };
-    // }
+    const priorDetails = await User.findOne({ where: { id } });
     const newIsGuarantorObj = { isGuarantor: newIsGuarantor }
     const result = await User.update(
       {
@@ -139,7 +144,7 @@ User.updateDetails = async function (
         status: newStatus || priorDetails.status, isGuarantor: newIsGuarantorObj["isGuarantor"] === undefined ? priorDetails.isGuarantor : newIsGuarantorObj["isGuarantor"],
       },
       {
-        where: { ...searchKey },
+        where: { id },
         returning: true,
         plain: true,
       }
@@ -160,9 +165,7 @@ User.updateDetails = async function (
  * 
  */
 User.adminUpdateDetails = async function (
-  id,
-  isAdmin,
-  email,
+  memberId,
   newFirstName,
   newLastName,
   newJoinDate,
@@ -178,11 +181,8 @@ User.adminUpdateDetails = async function (
   newIsGuarantor,
 ) {
   try {
-    let priorDetails;
-    let searchKey;
 
-    priorDetails = await User.findOne({ where: { email } });
-    searchKey = { email: email };
+    priorDetails = await User.findOne({ where: { memberId } });
     const newIsGuarantorObj = { isGuarantor: newIsGuarantor }
     const result = await User.update(
       {
@@ -195,7 +195,7 @@ User.adminUpdateDetails = async function (
         status: newStatus || priorDetails.status, isGuarantor: newIsGuarantorObj["isGuarantor"] === undefined ? priorDetails.isGuarantor : newIsGuarantorObj["isGuarantor"],
       },
       {
-        where: { ...searchKey },
+        where: { memberId },
         returning: true,
         plain: true,
       }

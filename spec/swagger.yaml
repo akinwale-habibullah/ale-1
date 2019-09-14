@@ -232,6 +232,111 @@ paths:
                 message: Invalid input
                 errorCode: 10
 
+  '/userdetails': 
+      get:
+        security:
+        - tokenAuth: []
+        summary: Get user details
+        description: Gets all details of a user available in the database
+        operationId: getUserByAdmin
+
+        parameters:
+          - in: header
+            name: x-access-token
+            description: admin token
+            required: true
+            schema:
+              type: string
+
+        produces:
+          - application/json
+
+        responses:
+          200:
+            description: Success
+            examples:
+              application/json:
+                success: true
+                message: User data returned
+                data: {
+                        id: 3,
+                        firstName: "OFatimah",
+                        lastName: "Ayinla",
+                        email: "ayinlaolajide@yahooo.com",
+                        userName: "Olajide",
+                        joinDate: "22 April 2018",
+                        memberId: "0909123",
+                        nextSavingsDate: "22 April 2018",
+                        nextSavingsAmount: "20,000",
+                        position: "Secretary",
+                        phone: "081856646464",
+                        status: "active",
+                        isGuarantor: false,
+                        createdAt: "2019-07-07T10:26:07.043Z",
+                        updatedAt: "2019-07-07T10:26:07.043Z"
+                        }
+          400:
+            description: Bad input
+            schema:
+              $ref: '#/definitions/ErrorResponse'
+            examples:
+              application/json:
+                success: false
+                message: Invalid input
+                errorCode: 10
+
+      post:
+        security:
+        - tokenAuth: []
+        summary: Edit user details
+        description: Enables admin to edit details of a particular user
+        operationId: editUserByAdmin
+
+        parameters:
+          - in: header
+            name: x-access-token
+            description: admin token
+            required: true
+            schema:
+              type: string
+
+        produces:
+          - application/json
+
+        responses:
+          200:
+            description: Success
+            examples:
+              application/json:
+                success: true
+                message: User data returned
+                data: {
+                        id: 3,
+                        firstName: "OFatimah",
+                        lastName: "Ayinla",
+                        email: "ayinlaolajide@yahooo.com",
+                        userName: "Olajide",
+                        joinDate: "22 April 2018",
+                        memberId: "0909123",
+                        nextSavingsDate: "22 April 2018",
+                        nextSavingsAmount: "20,000",
+                        position: "Secretary",
+                        phone: "081856646464",
+                        status: "active",
+                        isGuarantor: false,
+                        createdAt: "2019-07-07T10:26:07.043Z",
+                        updatedAt: "2019-07-07T10:26:07.043Z"
+                        }
+          400:
+            description: Bad input
+            schema:
+              $ref: '#/definitions/ErrorResponse'
+            examples:
+              application/json:
+                success: false
+                message: Invalid input
+                errorCode: 10
+
   '/savingsandloans': 
       get:
         security:
@@ -1109,19 +1214,19 @@ definitions:
         type: string
       accountCode:
         description: The account code this transaction is reflected on
-        type: number
+        type: float
       credit:
         description: The credit value of the transaction
-        type: number
+        type: float
       debit:
         description: The debit value of the transaction
-        type: number
+        type: float
       currency:
         description: The currency for this transaction
         type: string
       exchangeRate:
         description: The exchange rate to convert to the basis currency
-        type: number
+        type: float
 
   Response:
     type: object
@@ -1282,7 +1387,6 @@ definitions:
       - firstName
       - lastName
       - email
-      - userName
       - password
     properties:
       firstName:
