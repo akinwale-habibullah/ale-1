@@ -15,11 +15,11 @@
 const dotenv = require('dotenv');
 dotenv.config();
 const Sequelize = require('sequelize');
-const conn = process.env.ALE_CONNECTION;
+const conn = process.env.DATABASE_URL;
 const { AleError, codes } = require('../lib/errors');
 
 if (!conn) {
-    throw new AleError('ALE_CONNECTION envar is not set, cannot connect to database', codes.DatabaseConnectionError);
+    throw new AleError('DATABASE_URL envar is not set, cannot connect to database', codes.DatabaseConnectionError);
 }
 
 const options = process.env.ALE_DEBUG === 'true' ? { logging: console.log } : { logging: null };

@@ -6,7 +6,7 @@ const JournalEntry = require('../models/journal');
 const Account = require('../models/account');
 const { Client } = require('pg');
 const async = require('async');
-const conn = process.env.ALE_CONNECTION;
+const conn = process.env.DATABASE_URL;
 
 
 module.exports.create = () => {

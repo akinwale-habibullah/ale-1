@@ -30,11 +30,11 @@ For PostgreSQL, this would entail
 
 `yarn add pg`
 
-You *must* set an `ALE_CONNECTION` environment variable which holds the connection string to connect to the underlying database. To date, ThriftBox has been tested against PostgreSQL, but any DB supported by Sequelize (SQLite, MySQL etc) should work.
+You *must* set an `DATABASE_URL` environment variable which holds the connection string to connect to the underlying database. To date, ThriftBox has been tested against PostgreSQL, but any DB supported by Sequelize (SQLite, MySQL etc) should work.
 
 - Configure your .env file to follow the sample below
 ```
-ALE_CONNECTION=postgres://smmvndghq:DJvTv_LIzn1J5244-z5a0TiZvfT2pC7wxg@manny.db.elephantsql.com:5432/smmvndhggq 
+DATABASE_URL=postgres://smmvndghq:DJvTv_LIzn1J5244-z5a0TiZvfT2pC7wxg@manny.db.elephantsql.com:5432/smmvndhggq 
 TEST_ALE_CONNECTION=postgres://wcfhhujiuytk:K1a6OkaZBceVQvjhghghgNKQBS1BbC6u-ltRjXH@raja.db.elephantsql.com:5432/wcfhhujjjhhk
 ALE_PORT=5000
 ALE_DEBUG=true

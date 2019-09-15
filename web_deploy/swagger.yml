@@ -1,0 +1,1382 @@
+swagger: '2.0'
+schemes:
+  - http
+host: 'localhost:5000'
+basePath: /
+info:
+  description: |
+    # ThriftBox REST API
+    ThriftBox is an application to manage and administer cooperative societies.
+  version: 1.0.0
+  title: ThriftBox
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  x-logo:
+    url: /ale/logo.png
+externalDocs:
+  description: ThroftBox backend Github page
+  url: 'https://github.com/olajide1234/ale'
+produces:
+  - application/json
+consumes:
+  - application/json
+securityDefinitions:
+  tokenAuth:
+    type: basic
+paths:
+  /users/signup:
+    post:
+      summary: Create a new user
+      description: Create a new user in the database
+      operationId: postUserSignup
+      parameters:
+        - in: body
+          name: body
+          description: New user definition
+          required: true
+          schema:
+            $ref: '#/definitions/PostUserSignup'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/UserObject'
+          examples:
+            application/json:
+              success: true
+              message: New account has been created successfully
+              data:
+                isNew: true
+                user:
+                  id: 2
+                  firstName: Olajide
+                  lastName: Ayinla
+                  userName: Olajide
+                  email: ayinlaolajide@yahooF.com
+                  memberId: 0909123
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1NjIyNDE0NDYsImV4cCI6MTU2Mjg0Nj
+        '400':
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: Invalid input
+              errorCode: 10
+  /users/signin:
+    post:
+      summary: Sign in a user
+      description: Signs in a returning user to the database
+      operationId: postUserSignin
+      parameters:
+        - in: body
+          name: body
+          description: User signin details
+          required: true
+          schema:
+            $ref: '#/definitions/PostUserSignin'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/UserObject'
+          examples:
+            application/json:
+              success: true
+              message: User signed in successfully
+              data:
+                user:
+                  id: 1
+                  firstName: Olajide
+                  lastName: Ayinla
+                  userName: Olajide
+                  email: ayinlaolajide@yahoo.com
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTU2MjI0MTYzMiwiZXhwIjoxNTYyODQ2NDMyfQ.ouIFT3f2C3wUXoKjUp-K_imYYfBkvQW-BgPbfnSqUoU
+        '400':
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: Invalid input
+              errorCode: 10
+  /users:
+    get:
+      security:
+        - tokenAuth: []
+      summary: Get user details
+      description: Gets all details of a user available in the database
+      operationId: getUser
+      parameters:
+        - in: header
+          name: x-access-token
+          description: user token
+          required: true
+          schema:
+            type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          examples:
+            application/json:
+              success: true
+              message: User data returned
+              data:
+                id: 3
+                firstName: OFatimah
+                lastName: Ayinla
+                email: ayinlaolajide@yahooo.com
+                userName: Olajide
+                joinDate: 22 April 2018
+                memberId: 0909123
+                nextSavingsDate: 22 April 2018
+                nextSavingsAmount: '20,000'
+                position: Secretary
+                phone: 081856646464
+                status: active
+                isGuarantor: false
+                createdAt: '2019-07-07T10:26:07.043Z'
+                updatedAt: '2019-07-07T10:26:07.043Z'
+        '400':
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: Invalid input
+              errorCode: 10
+    post:
+      security:
+        - tokenAuth: []
+      summary: Edit user details
+      description: Edit user details in database
+      operationId: editUser
+      parameters:
+        - in: query
+          name: email
+          description: email address of user to change details for. Only required when requester is admin and not account owner.
+          required: false
+          schema:
+            type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          examples:
+            application/json:
+              success: true
+              message: User data updated
+              data:
+                id: 3
+                firstName: OFatimah
+                lastName: Ayinla
+                email: ayinlaolajide@yahooo.com
+                userName: Olajide
+                joinDate: 22 April 2018
+                memberId: 0909123
+                nextSavingsDate: 22 April 2018
+                nextSavingsAmount: '20,000'
+                position: Secretary
+                phone: 081856646464
+                status: active
+                isGuarantor: false
+                createdAt: '2019-07-07T10:26:07.043Z'
+                updatedAt: '2019-07-07T10:26:07.043Z'
+        '400':
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: Invalid input
+              errorCode: 10
+  /userdetails:
+    get:
+      security:
+        - tokenAuth: []
+      summary: Get user details
+      description: Gets all details of a user available in the database
+      operationId: getUserByAdmin
+      parameters:
+        - in: header
+          name: x-access-token
+          description: admin token
+          required: true
+          schema:
+            type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          examples:
+            application/json:
+              success: true
+              message: User data returned
+              data:
+                id: 3
+                firstName: OFatimah
+                lastName: Ayinla
+                email: ayinlaolajide@yahooo.com
+                userName: Olajide
+                joinDate: 22 April 2018
+                memberId: 0909123
+                nextSavingsDate: 22 April 2018
+                nextSavingsAmount: '20,000'
+                position: Secretary
+                phone: 081856646464
+                status: active
+                isGuarantor: false
+                createdAt: '2019-07-07T10:26:07.043Z'
+                updatedAt: '2019-07-07T10:26:07.043Z'
+        '400':
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: Invalid input
+              errorCode: 10
+    post:
+      security:
+        - tokenAuth: []
+      summary: Edit user details
+      description: Enables admin to edit details of a particular user
+      operationId: editUserByAdmin
+      parameters:
+        - in: header
+          name: x-access-token
+          description: admin token
+          required: true
+          schema:
+            type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          examples:
+            application/json:
+              success: true
+              message: User data returned
+              data:
+                id: 3
+                firstName: OFatimah
+                lastName: Ayinla
+                email: ayinlaolajide@yahooo.com
+                userName: Olajide
+                joinDate: 22 April 2018
+                memberId: 0909123
+                nextSavingsDate: 22 April 2018
+                nextSavingsAmount: '20,000'
+                position: Secretary
+                phone: 081856646464
+                status: active
+                isGuarantor: false
+                createdAt: '2019-07-07T10:26:07.043Z'
+                updatedAt: '2019-07-07T10:26:07.043Z'
+        '400':
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: Invalid input
+              errorCode: 10
+  /savingsandloans:
+    get:
+      security:
+        - tokenAuth: []
+      summary: Get savings & loans balance and history
+      description: Gets the balance and history of a user's savings and loans from the designated accounts
+      operationId: getSavingsAndLoans
+      parameters:
+        - in: header
+          name: x-access-token
+          description: user token
+          required: true
+          schema:
+            type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          examples:
+            application/json:
+              success: true
+              message: User data returned
+              data:
+                id: To be updated
+        '400':
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: Invalid input
+              errorCode: 10
+  /members:
+    get:
+      security:
+        - tokenAuth: []
+      summary: Get all member details
+      description: Gets all details of members available in the database
+      operationId: getMembers
+      parameters:
+        - in: header
+          name: x-access-token
+          description: user token
+          required: true
+          schema:
+            type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          examples:
+            application/json:
+              success: true
+              message: All user data returned
+              data:
+                - id: 3
+                  firstName: OFatimah
+                  lastName: Ayinla
+                  email: ayinlaolajide@yahooo.com
+                  userName: Olajide
+                  joinDate: 22 April 2018
+                  memberId: 0909123
+                  nextSavingsDate: 22 April 2018
+                  nextSavingsAmount: '20,000'
+                  position: Secretary
+                  phone: 081856646464
+                  status: active
+                  isGuarantor: false
+                  createdAt: '2019-07-07T10:26:07.043Z'
+                  updatedAt: '2019-07-07T10:26:07.043Z'
+  /exco:
+    get:
+      security:
+        - tokenAuth: []
+      summary: Get exco details
+      description: Gets important exco details to display on website
+      operationId: getExco
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          examples:
+            application/json:
+              success: true
+              message: All user data returned
+              data:
+                - id: 3
+                  firstName: OFatimah
+                  lastName: Ayinla
+                  email: ayinlaolajide@yahooo.com
+                  userName: Olajide
+                  joinDate: 22 April 2018
+                  memberId: 0909123
+                  nextSavingsDate: 22 April 2018
+                  nextSavingsAmount: '20,000'
+                  position: secretary
+                  phone: 081856646464
+                  status: active
+                  isGuarantor: false
+                  createdAt: '2019-07-07T10:26:07.043Z'
+                  updatedAt: '2019-07-07T10:26:07.043Z'
+                - id: 4
+                  firstName: OFatimah
+                  lastName: Ayinla
+                  email: ayinlaolajide@yahooo.com
+                  userName: Olajide
+                  joinDate: 22 April 2018
+                  memberId: 0909123
+                  nextSavingsDate: 22 April 2018
+                  nextSavingsAmount: '20,000'
+                  position: president
+                  phone: 081856646464
+                  status: active
+                  isGuarantor: false
+                  createdAt: '2019-07-07T10:26:07.043Z'
+                  updatedAt: '2019-07-07T10:26:07.043Z'
+  /stats:
+    get:
+      security:
+        - tokenAuth: []
+      summary: Get cooperative statistics
+      description: Gets important cooperative statistics such as balances and member strenght
+      operationId: getStats
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          examples:
+            application/json:
+              success: true
+              message: All user data returned
+              data:
+                - stats: stats
+  /company:
+    post:
+      summary: Create a new company
+      description: Creates a new company in the database
+      operationId: postCompany
+      parameters:
+        - in: body
+          name: body
+          description: Company details
+          required: true
+          schema:
+            $ref: '#/definitions/PostCompany'
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/CompanyObject'
+          examples:
+            application/json:
+              success: true
+              message: New company has been created successfully
+              data:
+                isNew: true
+                company:
+                  id: 1
+                  name: Test company
+                  updatedAt: '2019-07-04T12:02:05.369Z'
+                  createdAt: '2019-07-04T12:02:05.369Z'
+        '400':
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: Invalid input
+              errorCode: 10
+  /savings:
+    get:
+      security:
+        - tokenAuth: []
+      summary: Get pending savings change requests
+      description: Gets pending savings date and amount change requests
+      operationId: getSavingsChange
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          examples:
+            application/json:
+              success: true
+              message: All user data returned
+              data:
+                - stats: stats
+  /loans:
+    get:
+      security:
+        - tokenAuth: []
+      summary: Get all existing loan requests
+      description: Returns all exsiting loan requests in the database
+      operationId: getLoans
+      responses:
+        '200':
+          description: Success
+          examples:
+            application/json:
+              success: true
+              message: All loans returned
+              data: {}
+        '400':
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: Invalid input
+              errorCode: 10
+    post:
+      security:
+        - tokenAuth: []
+      summary: Create a new loan request
+      description: Creates a new loan request in the database
+      operationId: postLoans
+      parameters:
+        - in: body
+          name: body
+          description: Loan details
+          required: true
+          schema:
+            $ref: '#/definitions/PostLoan'
+      responses:
+        '200':
+          description: Success
+          examples:
+            application/json:
+              success: true
+              message: New company has been created successfully
+              data:
+                isNew: true
+                company:
+                  id: 1
+                  name: Test company
+                  updatedAt: '2019-07-04T12:02:05.369Z'
+                  createdAt: '2019-07-04T12:02:05.369Z'
+        '400':
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: Invalid input
+              errorCode: 10
+    patch:
+      security:
+        - tokenAuth: []
+      summary: Approve a loan request
+      description: Approves a loan request already in database
+      operationId: approveLoans
+      parameters:
+        - in: query
+          name: loanId
+          description: Id of loan to be processed
+          required: true
+      responses:
+        '200':
+          description: Success
+          examples:
+            application/json:
+              success: true
+              message: First level rejection has been included
+              data:
+                id: 15
+                loanAmount: 10
+                interest: null
+                fees: null
+                tenure: 5
+                comments: I need this loan immediately
+                repayment: null
+                guarantor1Id: 1
+                guarantor2Id: 6
+                guarantor3Id: null
+                approver1Id: 8
+                approver2Id: null
+                approver3Id: null
+                rejecter1Id: 8
+                rejecter2Id: null
+                rejecter3Id: null
+                status: approved
+                type: cash loan
+                createdAt: '2019-09-01T14:13:00.559Z'
+                updatedAt: '2019-09-02T06:50:47.015Z'
+                debtorId: 1
+        '400':
+          description: Bad input
+          examples:
+            application/json:
+              success: false
+              message: Loan with selected ID does not exist
+  /books:
+    get:
+      security:
+        - tokenAuth: []
+      summary: List all current books
+      description: |
+        Produces an array of all the books currently registered on the database.
+      operationId: getBooks
+      responses:
+        '200':
+          description: The array of books
+          schema:
+            $ref: '#/definitions/Books'
+          examples:
+            application/json:
+              - id: General Ledger
+                currency: USD
+              - id: London office ledger
+                currency: GBP
+    post:
+      security:
+        - tokenAuth: []
+      summary: Create a new book
+      description: Creates a new book in the database
+      operationId: postBooks
+      parameters:
+        - in: body
+          name: body
+          description: New Book definition
+          required: true
+          schema:
+            $ref: '#/definitions/Book'
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/BookResponse'
+          examples:
+            application/json:
+              success: false
+              message: Book 'General' already exists
+              data:
+                id: 1
+                name: Olajide test
+                currency: NGN
+                createdAt: 1562240661420
+                updatedAt: 1562240661420
+        '400':
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: body requires property \"name\"
+              errorCode: 10
+  '/books/{bookId}/ledger':
+    parameters:
+      - name: bookId
+        description: The book to extract entries from
+        in: path
+        type: integer
+        required: true
+    post:
+      security:
+        - tokenAuth: []
+      summary: Post a new Journal entry
+      description: Add a new (balanced) Journal entry to the book
+      operationId: postBookEntry
+      parameters:
+        - name: body
+          in: body
+          description: The new Journal Entry definition
+          schema:
+            $ref: '#/definitions/NewJournalEntry'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/PostEntryResponse'
+    get:
+      security:
+        - tokenAuth: []
+      summary: Fetch the ledger
+      description: |
+        Fetches all transactions for the given book for the dates provided
+      operationId: getBookEntries
+      parameters:
+        - name: bookId
+          description: The book to extract entries from
+          in: path
+          type: integer
+          required: true
+        - name: startDate
+          in: query
+          description: The start date for entries
+          required: false
+          type: string
+        - name: endDate
+          in: query
+          description: The end date for entries
+          required: false
+          type: string
+        - name: perPage
+          in: query
+          description: The number of results per page
+          required: false
+          type: integer
+        - name: page
+          in: query
+          description: The page number
+          required: false
+          type: integer
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Entries'
+          examples:
+            application/json:
+              book:
+                id: General Ledger
+                currency: USD
+              startDate: 1520228313023
+              endDate: 1520428313023
+              entries:
+                - date: 1520228313023
+                  memo: Payroll
+                  transactions:
+                    - account: 'Bank:Local'
+                      debit: 1000
+                      currency: USD
+                      exchangeRate: 1
+                    - account: 'Employees:Alice'
+                      value: 500
+                      currency: USD
+                      exchangeRate: 1
+                    - account: 'Employees:Bob'
+                      value: 500
+                      currency: USD
+                      exchangeRate: 1
+        '400':
+          description: 'Invalid input, such as unknown book'
+          schema:
+            $ref: '#/definitions/Response'
+  '/books/{bookId}/accounts':
+    parameters:
+      - name: bookId
+        description: The book to extract accounts from
+        in: path
+        type: integer
+        required: true
+    get:
+      security:
+        - tokenAuth: []
+      summary: List all accounts
+      operationId: getAccounts
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/AllAccounts'
+    post:
+      security:
+        - tokenAuth: []
+      summary: Create a new account
+      description: Creates a new account or returns existing if account already exists
+      operationId: postAccount
+      parameters:
+        - name: body
+          in: body
+          description: The new account definition
+          schema:
+            $ref: '#/definitions/NewAccountEntry'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/NewAccountResponse'
+          examples:
+            application/json:
+              success: true
+              message: New account has been created successfully
+              account:
+                id: 3
+                accountCode: 234556
+                accountName: Liability
+                toIncrease: debit
+                isPorL: true
+                accountType: Liability
+                subAccountType: Current liability
+                memo: This is a current liability account
+                bookId: 1
+                updatedAt: '2019-07-03T21:03:27.052Z'
+                createdAt: '2019-07-03T21:03:27.052Z'
+  '/books/{bookId}/transactions':
+    parameters:
+      - name: bookId
+        description: The book to extract entries from
+        in: path
+        type: integer
+        required: true
+    get:
+      security:
+        - tokenAuth: []
+      summary: List all transactions for given accounts
+      operationId: getTransactions
+      parameters:
+        - name: account
+          description: Name of account to return transactions for
+          in: query
+          type: string
+          required: true
+        - name: accountCode
+          description: Code of account to return transactions for
+          in: query
+          type: number
+          required: true
+        - name: perPage
+          in: query
+          description: The number of results per page
+          required: false
+          type: integer
+        - name: page
+          in: query
+          description: The page number
+          required: false
+          type: integer
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Transaction'
+  '/books/{bookId}/balance':
+    parameters:
+      - name: bookId
+        description: The book to extract entries from
+        in: path
+        type: integer
+        required: true
+    get:
+      security:
+        - tokenAuth: []
+      summary: Get account balance
+      description: Returns an account balance
+      operationId: getBalance
+      parameters:
+        - name: account
+          description: The account name to get the balance for
+          in: query
+          type: string
+          required: true
+        - name: accountCode
+          description: The account code to get the balance for
+          in: query
+          type: string
+          required: true
+        - name: inQuoteCurrency
+          description: 'If true (default), converts all values to the quote currency first'
+          in: query
+          type: boolean
+          required: false
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Balance'
+  '/books/{bookId}/subacctbalance':
+    parameters:
+      - name: bookId
+        description: The book to extract entries from
+        in: path
+        type: integer
+        required: true
+    get:
+      security:
+        - tokenAuth: []
+      summary: Fetch sub account balance
+      description: Return a sub account balance
+      operationId: getSubAcctBalance
+      parameters:
+        - name: account
+          description: The account name to get the balance for
+          in: query
+          type: string
+          required: true
+        - name: accountCode
+          description: The account code to get the balance for
+          in: query
+          type: string
+          required: true
+        - name: userId
+          description: The id of user who owns the subaccount
+          in: query
+          type: string
+        - name: companyId
+          description: The id of company who owns the subaccount
+          in: query
+          type: string
+        - name: inQuoteCurrency
+          description: 'If true (default), converts all values to the quote currency first'
+          in: query
+          type: boolean
+          required: false
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Balance'
+  '/books/{bookId}/subaccttransactions':
+    parameters:
+      - name: bookId
+        description: The book to extract entries from
+        in: path
+        type: integer
+        required: true
+    get:
+      security:
+        - tokenAuth: []
+      summary: Fetch sub account transactions
+      description: Return an array of sub account transactions
+      operationId: getSubAcctTransactions
+      parameters:
+        - name: account
+          description: The account name to get the transactions for
+          in: query
+          type: string
+          required: true
+        - name: accountCode
+          description: The account code to get the transactions for
+          in: query
+          type: string
+          required: true
+        - name: userId
+          description: The id of user who owns the subaccount
+          in: query
+          type: string
+        - name: companyId
+          description: The id of company who owns the subaccount
+          in: query
+          type: string
+        - name: inQuoteCurrency
+          description: 'If true (default), converts all values to the quote currency first'
+          in: query
+          type: boolean
+          required: false
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/SubTransactions'
+  '/books/{bookId}/tb':
+    parameters:
+      - name: bookId
+        description: The book to extract tb from
+        in: path
+        type: integer
+        required: true
+    get:
+      security:
+        - tokenAuth: []
+      summary: Return a trial balance
+      description: Returns a list of all accounts and balances as well as extra information
+      operationId: getTb
+      parameters:
+        - name: startDate
+          description: Start date for Profit or Loss account
+          in: query
+          type: string
+          required: true
+        - name: endDate
+          description: End date for Profit or Loss and Balance sheet
+          in: query
+          type: string
+          required: true
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/TB'
+  '/books/{bookId}/marktomarket':
+    parameters:
+      - name: bookId
+        description: The book to extract entries from
+        in: path
+        type: integer
+        required: true
+    post:
+      security:
+        - tokenAuth: []
+      summary: Mark the account(s) to market
+      description: Calculates the unlrealised profit of the given accounts at the exchange rate vector provided
+      operationId: postMarkToMarket
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            required:
+              - accounts
+              - exchangeRates
+            properties:
+              accounts:
+                type: array
+                items:
+                  type: string
+              exchangeRates:
+                type: object
+                additionalProperties:
+                  type: number
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/UnrealisedProfit'
+definitions:
+  Books:
+    type: array
+    items:
+      $ref: '#/definitions/Book'
+  Book:
+    type: object
+    required:
+      - name
+      - currency
+    properties:
+      id:
+        description: The id for the book the book
+        type: integer
+      name:
+        description: The name of the book
+        type: string
+        example: General Ledger
+      currency:
+        description: |
+          The currency the book is referenced in.
+          All other currencies and calculations are quoted in terms of this currency
+        type: string
+        example: USD
+      createdAt:
+        description: The timestamp of when the book was created
+        type: number
+      updatedAt:
+        description: The timestamp of the last time this entry was modified
+        type: number
+  Entries:
+    type: object
+    properties:
+      book:
+        $ref: '#/definitions/Book'
+      startDate:
+        type: number
+      endDate:
+        type: number
+      entries:
+        type: array
+        items:
+          $ref: '#/definitions/Entry'
+  Entry:
+    type: object
+    properties:
+      date:
+        description: The timestamp for the entry
+        type: number
+      memo:
+        description: The description for the entry
+        type: string
+      voided:
+        description: Indicates whether the entry is still valid
+        type: boolean
+      voidReason:
+        description: The reason for the entry reversal
+        type: string
+      transactions:
+        description: An array of transactions for the entry
+        type: array
+        items:
+          $ref: '#/definitions/Transaction'
+  Transaction:
+    type: object
+    required:
+      - account
+      - accountCode
+    properties:
+      account:
+        description: The account name this transaction is reflected on
+        type: string
+      accountCode:
+        description: The account code this transaction is reflected on
+        type: float
+      credit:
+        description: The credit value of the transaction
+        type: float
+      debit:
+        description: The debit value of the transaction
+        type: float
+      currency:
+        description: The currency for this transaction
+        type: string
+      exchangeRate:
+        description: The exchange rate to convert to the basis currency
+        type: float
+  Response:
+    type: object
+    properties:
+      success:
+        description: Indicates whether request was succesful
+        type: boolean
+      message:
+        type: string
+  ErrorResponse:
+    allOf:
+      - $ref: '#/definitions/Response'
+      - properties:
+          errorCode:
+            type: integer
+  BookResponse:
+    allOf:
+      - $ref: '#/definitions/Response'
+      - $ref: '#/definitions/Book'
+  PostEntryResponse:
+    allOf:
+      - $ref: '#/definitions/Response'
+      - properties:
+          id:
+            description: The id of the new Journal Entry
+            type: integer
+  NewJournalEntry:
+    type: object
+    required:
+      - memo
+      - transactions
+    properties:
+      memo:
+        description: The Journal Entry description
+        type: string
+      timestamp:
+        description: The time stamp for the journal entry
+        type: string
+      transactions:
+        type: array
+        items:
+          $ref: '#/definitions/Transaction'
+  NewAccountEntry:
+    type: object
+    required:
+      - accountCode
+      - accountName
+      - isPorL
+      - toIncrease
+    properties:
+      accountCode:
+        description: Unique code for the new account
+        type: integer
+      accountName:
+        description: Name for new account
+        type: string
+      toIncrease:
+        description: Posting to increase account
+        type: string
+      isPorL:
+        description: Is this a 'P or L' or 'Balance sheet' account
+        type: boolean
+      accountType:
+        description: 'Which account type? Income, liability etc.'
+        type: string
+      subAccountType:
+        description: 'Which sub-account type? current asset, non-current etc. Also for reporting purposes'
+        type: string
+      memo:
+        description: Some description of the account
+        type: string
+  NewAccountResponse:
+    type: object
+    properties:
+      success:
+        description: Indicates whether request was succesful
+        type: boolean
+      message:
+        description: Short elaboration of status
+        type: string
+      account:
+        description: New account created object
+        type: object
+  AllAccounts:
+    type: object
+    properties:
+      success:
+        description: Indicates whether request was succesful
+        type: boolean
+      message:
+        description: Short elaboration of status
+        type: string
+      data:
+        description: Array of all account objects
+        type: array
+        items: {}
+  TB:
+    type: object
+    properties:
+      success:
+        description: Indicates whether request was succesful
+        type: boolean
+      message:
+        description: Short elaboration of status
+        type: string
+      data:
+        description: Array of all account with balances and additional information
+        type: array
+        items: {}
+  Balance:
+    type: object
+    properties:
+      success:
+        description: Indicates whether request was succesful
+        type: boolean
+      message:
+        description: Short elaboration of status
+        type: string
+      data:
+        description: 'An object containing the following properties - creditTotal, debitTotal, balance, current, number of transactions'
+        type: object
+  SubTransactions:
+    type: object
+    properties:
+      success:
+        description: Indicates whether request was succesful
+        type: boolean
+      message:
+        description: Short elaboration of status
+        type: string
+      data:
+        description: An array of objects containing individual transaction entries
+        type: array
+        items: {}
+  UnrealisedProfit:
+    type: object
+    properties:
+      unrealizedProfit:
+        description: The total current unrealised profit for the given accounts
+        type: number
+      additionalProperties:
+        type: number
+  PostUserSignup:
+    type: object
+    required:
+      - firstName
+      - lastName
+      - email
+      - password
+    properties:
+      firstName:
+        description: Firstname of user to be registered
+        type: string
+      lastName:
+        description: Lastname of user to be registered
+        type: string
+      email:
+        description: Email of user to be registered
+        type: string
+      userName:
+        description: Username of user to be registered
+        type: string
+      password:
+        description: Password of user to be registered
+        type: string
+      joinDate:
+        description: Join date of user to be registered
+        type: string
+      memberId:
+        description: MemberID of user to be registered
+        type: string
+      nextSavingsDate:
+        description: Next savings date of user to be registered
+        type: integer
+      nextSavingsAmount:
+        description: Next savings amount of user to be registered
+        type: float
+      position:
+        description: Executive position of user to be registered
+        type: string
+      phone:
+        description: Phone number of user to be registered
+        type: string
+      status:
+        description: Status of user to be registered
+        type: string
+  PostUserSignin:
+    type: object
+    required:
+      - email
+      - password
+    properties:
+      email:
+        description: Email of user to be signed in
+        type: string
+      password:
+        description: Password of user to be signed in
+        type: string
+  PostCompany:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        description: Name of company to be registered
+        type: string
+  CompanyObject:
+    type: object
+    properties:
+      name:
+        description: Name of company registered
+        type: string
+  UserObject:
+    type: object
+    properties:
+      firstName:
+        description: Firstname of user to be registered
+        type: string
+      lastName:
+        description: Lastname of user to be registered
+        type: string
+      email:
+        description: Email of user to be registered
+        type: string
+      userName:
+        description: Username of user to be registered
+        type: string
+      token:
+        description: User token
+        type: string
+  PostLoan:
+    type: object
+    required:
+      - loanAmount
+      - tenure
+      - guarantor1Id
+      - guarantor2Id
+    properties:
+      loanAmount:
+        description: Loan amount requested
+        type: float
+      interest:
+        description: Calculated interest on loan
+        type: float
+      fee:
+        description: Calculated fee on loan
+        type: float
+      tenure:
+        description: 'Count of loan repayment instanced, monthly preferrably'
+        type: integer
+      comments:
+        description: Applicant's comments with the application
+        type: string
+      guarantor1Id:
+        description: First nominated guarantor
+        type: integer
+      guarantor2Id:
+        description: Second nominated guarantor
+        type: integer

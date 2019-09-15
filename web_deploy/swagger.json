@@ -230,8 +230,8 @@
           {
             "in": "query",
             "name": "email",
-            "description": "email address of user to change details for",
-            "required": true,
+            "description": "email address of user to change details for. Only required when requester is admin and not account owner.",
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -263,6 +263,191 @@
                   "isGuarantor": false,
                   "createdAt": "2019-07-07T10:26:07.043Z",
                   "updatedAt": "2019-07-07T10:26:07.043Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad input",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            },
+            "examples": {
+              "application/json": {
+                "success": false,
+                "message": "Invalid input",
+                "errorCode": 10
+              }
+            }
+          }
+        }
+      }
+    },
+    "/userdetails": {
+      "get": {
+        "security": [
+          {
+            "tokenAuth": []
+          }
+        ],
+        "summary": "Get user details",
+        "description": "Gets all details of a user available in the database",
+        "operationId": "getUserByAdmin",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-access-token",
+            "description": "admin token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "examples": {
+              "application/json": {
+                "success": true,
+                "message": "User data returned",
+                "data": {
+                  "id": 3,
+                  "firstName": "OFatimah",
+                  "lastName": "Ayinla",
+                  "email": "ayinlaolajide@yahooo.com",
+                  "userName": "Olajide",
+                  "joinDate": "22 April 2018",
+                  "memberId": "0909123",
+                  "nextSavingsDate": "22 April 2018",
+                  "nextSavingsAmount": "20,000",
+                  "position": "Secretary",
+                  "phone": "081856646464",
+                  "status": "active",
+                  "isGuarantor": false,
+                  "createdAt": "2019-07-07T10:26:07.043Z",
+                  "updatedAt": "2019-07-07T10:26:07.043Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad input",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            },
+            "examples": {
+              "application/json": {
+                "success": false,
+                "message": "Invalid input",
+                "errorCode": 10
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "tokenAuth": []
+          }
+        ],
+        "summary": "Edit user details",
+        "description": "Enables admin to edit details of a particular user",
+        "operationId": "editUserByAdmin",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-access-token",
+            "description": "admin token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "examples": {
+              "application/json": {
+                "success": true,
+                "message": "User data returned",
+                "data": {
+                  "id": 3,
+                  "firstName": "OFatimah",
+                  "lastName": "Ayinla",
+                  "email": "ayinlaolajide@yahooo.com",
+                  "userName": "Olajide",
+                  "joinDate": "22 April 2018",
+                  "memberId": "0909123",
+                  "nextSavingsDate": "22 April 2018",
+                  "nextSavingsAmount": "20,000",
+                  "position": "Secretary",
+                  "phone": "081856646464",
+                  "status": "active",
+                  "isGuarantor": false,
+                  "createdAt": "2019-07-07T10:26:07.043Z",
+                  "updatedAt": "2019-07-07T10:26:07.043Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad input",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            },
+            "examples": {
+              "application/json": {
+                "success": false,
+                "message": "Invalid input",
+                "errorCode": 10
+              }
+            }
+          }
+        }
+      }
+    },
+    "/savingsandloans": {
+      "get": {
+        "security": [
+          {
+            "tokenAuth": []
+          }
+        ],
+        "summary": "Get savings & loans balance and history",
+        "description": "Gets the balance and history of a user's savings and loans from the designated accounts",
+        "operationId": "getSavingsAndLoans",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-access-token",
+            "description": "user token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "examples": {
+              "application/json": {
+                "success": true,
+                "message": "User data returned",
+                "data": {
+                  "id": "To be updated"
                 }
               }
             }
@@ -339,6 +524,99 @@
         }
       }
     },
+    "/exco": {
+      "get": {
+        "security": [
+          {
+            "tokenAuth": []
+          }
+        ],
+        "summary": "Get exco details",
+        "description": "Gets important exco details to display on website",
+        "operationId": "getExco",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "examples": {
+              "application/json": {
+                "success": true,
+                "message": "All user data returned",
+                "data": [
+                  {
+                    "id": 3,
+                    "firstName": "OFatimah",
+                    "lastName": "Ayinla",
+                    "email": "ayinlaolajide@yahooo.com",
+                    "userName": "Olajide",
+                    "joinDate": "22 April 2018",
+                    "memberId": "0909123",
+                    "nextSavingsDate": "22 April 2018",
+                    "nextSavingsAmount": "20,000",
+                    "position": "secretary",
+                    "phone": "081856646464",
+                    "status": "active",
+                    "isGuarantor": false,
+                    "createdAt": "2019-07-07T10:26:07.043Z",
+                    "updatedAt": "2019-07-07T10:26:07.043Z"
+                  },
+                  {
+                    "id": 4,
+                    "firstName": "OFatimah",
+                    "lastName": "Ayinla",
+                    "email": "ayinlaolajide@yahooo.com",
+                    "userName": "Olajide",
+                    "joinDate": "22 April 2018",
+                    "memberId": "0909123",
+                    "nextSavingsDate": "22 April 2018",
+                    "nextSavingsAmount": "20,000",
+                    "position": "president",
+                    "phone": "081856646464",
+                    "status": "active",
+                    "isGuarantor": false,
+                    "createdAt": "2019-07-07T10:26:07.043Z",
+                    "updatedAt": "2019-07-07T10:26:07.043Z"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stats": {
+      "get": {
+        "security": [
+          {
+            "tokenAuth": []
+          }
+        ],
+        "summary": "Get cooperative statistics",
+        "description": "Gets important cooperative statistics such as balances and member strenght",
+        "operationId": "getStats",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "examples": {
+              "application/json": {
+                "success": true,
+                "message": "All user data returned",
+                "data": [
+                  {
+                    "stats": "stats"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
     "/company": {
       "post": {
         "summary": "Create a new company",
@@ -387,6 +665,189 @@
                 "success": false,
                 "message": "Invalid input",
                 "errorCode": 10
+              }
+            }
+          }
+        }
+      }
+    },
+    "/savings": {
+      "get": {
+        "security": [
+          {
+            "tokenAuth": []
+          }
+        ],
+        "summary": "Get pending savings change requests",
+        "description": "Gets pending savings date and amount change requests",
+        "operationId": "getSavingsChange",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "examples": {
+              "application/json": {
+                "success": true,
+                "message": "All user data returned",
+                "data": [
+                  {
+                    "stats": "stats"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/loans": {
+      "get": {
+        "security": [
+          {
+            "tokenAuth": []
+          }
+        ],
+        "summary": "Get all existing loan requests",
+        "description": "Returns all exsiting loan requests in the database",
+        "operationId": "getLoans",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "examples": {
+              "application/json": {
+                "success": true,
+                "message": "All loans returned",
+                "data": {}
+              }
+            }
+          },
+          "400": {
+            "description": "Bad input",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            },
+            "examples": {
+              "application/json": {
+                "success": false,
+                "message": "Invalid input",
+                "errorCode": 10
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "tokenAuth": []
+          }
+        ],
+        "summary": "Create a new loan request",
+        "description": "Creates a new loan request in the database",
+        "operationId": "postLoans",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Loan details",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PostLoan"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "examples": {
+              "application/json": {
+                "success": true,
+                "message": "New company has been created successfully",
+                "data": {
+                  "isNew": true,
+                  "company": {
+                    "id": 1,
+                    "name": "Test company",
+                    "updatedAt": "2019-07-04T12:02:05.369Z",
+                    "createdAt": "2019-07-04T12:02:05.369Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad input",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            },
+            "examples": {
+              "application/json": {
+                "success": false,
+                "message": "Invalid input",
+                "errorCode": 10
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "security": [
+          {
+            "tokenAuth": []
+          }
+        ],
+        "summary": "Approve a loan request",
+        "description": "Approves a loan request already in database",
+        "operationId": "approveLoans",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "loanId",
+            "description": "Id of loan to be processed",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "examples": {
+              "application/json": {
+                "success": true,
+                "message": "First level rejection has been included",
+                "data": {
+                  "id": 15,
+                  "loanAmount": 10,
+                  "interest": null,
+                  "fees": null,
+                  "tenure": 5,
+                  "comments": "I need this loan immediately",
+                  "repayment": null,
+                  "guarantor1Id": 1,
+                  "guarantor2Id": 6,
+                  "guarantor3Id": null,
+                  "approver1Id": 8,
+                  "approver2Id": null,
+                  "approver3Id": null,
+                  "rejecter1Id": 8,
+                  "rejecter2Id": null,
+                  "rejecter3Id": null,
+                  "status": "approved",
+                  "type": "cash loan",
+                  "createdAt": "2019-09-01T14:13:00.559Z",
+                  "updatedAt": "2019-09-02T06:50:47.015Z",
+                  "debtorId": 1
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad input",
+            "examples": {
+              "application/json": {
+                "success": false,
+                "message": "Loan with selected ID does not exist"
               }
             }
           }
@@ -1166,15 +1627,15 @@
         },
         "accountCode": {
           "description": "The account code this transaction is reflected on",
-          "type": "number"
+          "type": "float"
         },
         "credit": {
           "description": "The credit value of the transaction",
-          "type": "number"
+          "type": "float"
         },
         "debit": {
           "description": "The debit value of the transaction",
-          "type": "number"
+          "type": "float"
         },
         "currency": {
           "description": "The currency for this transaction",
@@ -1182,7 +1643,7 @@
         },
         "exchangeRate": {
           "description": "The exchange rate to convert to the basis currency",
-          "type": "number"
+          "type": "float"
         }
       }
     },
@@ -1405,7 +1866,6 @@
         "firstName",
         "lastName",
         "email",
-        "userName",
         "password"
       ],
       "properties": {
@@ -1439,11 +1899,11 @@
         },
         "nextSavingsDate": {
           "description": "Next savings date of user to be registered",
-          "type": "string"
+          "type": "integer"
         },
         "nextSavingsAmount": {
           "description": "Next savings amount of user to be registered",
-          "type": "string"
+          "type": "float"
         },
         "position": {
           "description": "Executive position of user to be registered",
@@ -1519,6 +1979,45 @@
         "token": {
           "description": "User token",
           "type": "string"
+        }
+      }
+    },
+    "PostLoan": {
+      "type": "object",
+      "required": [
+        "loanAmount",
+        "tenure",
+        "guarantor1Id",
+        "guarantor2Id"
+      ],
+      "properties": {
+        "loanAmount": {
+          "description": "Loan amount requested",
+          "type": "float"
+        },
+        "interest": {
+          "description": "Calculated interest on loan",
+          "type": "float"
+        },
+        "fee": {
+          "description": "Calculated fee on loan",
+          "type": "float"
+        },
+        "tenure": {
+          "description": "Count of loan repayment instanced, monthly preferrably",
+          "type": "integer"
+        },
+        "comments": {
+          "description": "Applicant's comments with the application",
+          "type": "string"
+        },
+        "guarantor1Id": {
+          "description": "First nominated guarantor",
+          "type": "integer"
+        },
+        "guarantor2Id": {
+          "description": "Second nominated guarantor",
+          "type": "integer"
         }
       }
     }
