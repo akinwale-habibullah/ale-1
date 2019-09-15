@@ -19,10 +19,22 @@ const conn = process.env.DATABASE_URL;
 const { AleError, codes } = require('../lib/errors');
 
 if (!conn) {
-    throw new AleError('DATABASE_URL envar is not set, cannot connect to database', codes.DatabaseConnectionError);
+    throw new AleError('DATABASE_URL envar is not set, cannot connect to database service', codes.DatabaseConnectionError);
 }
 
-const options = process.env.ALE_DEBUG === 'true' ? { logging: console.log } : { logging: null };
+const options = process.env.ALE_DEBUG === 'true' ? {
+    logging: console.log,
+    dialectOptions:
+    {
+        ssl: true
+    }
+} : {
+    logging: null,
+        dialectOptions:
+        {
+            ssl: true
+        }
+    };
 const sequelize = new Sequelize(conn, options);
 
 module.exports = sequelize;

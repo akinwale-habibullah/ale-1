@@ -41,8 +41,11 @@
     "gulp-connect": "^4.2.0",
     "gulp-util": "^3.0.7",
     "jsonwebtoken": "8.5.1",
+    "pg": "7.12.1",
+    "pg-hstore": "2.3.3",
     "portfinder": "^1.0.3",
     "sequelize": "^4.11.0",
+    "sequelize-cli": "5.5.1",
     "shelljs": "^0.7.0",
     "swagger-repo": "^1.0.0",
     "swagger-routes": "1.7.0",
@@ -51,8 +54,6 @@
   "devDependencies": {
     "mocha": "^3.5.3",
     "nodemon": "1.19.1",
-    "pg": "^7.3.0",
-    "pg-hstore": "^2.3.2",
     "supertest": "3.0.0"
   }
 }
