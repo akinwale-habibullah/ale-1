@@ -668,6 +668,125 @@ paths:
               success: false
               message: Loan with selected ID does not exist
 
+  
+  '/promoloans': 
+    get:
+      security:
+      - tokenAuth: []
+      summary: Get all existing promo items requests
+      description: Returns all exsiting promo items requests in the database
+      operationId: getPromoRequests
+
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json:
+              success: true
+              message: All exsiting promo items returned
+              data: {}
+        400:
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: Invalid input
+              errorCode: 10
+
+    post:
+      security:
+      - tokenAuth: []
+      summary: Create a new promo loan request
+      description: Creates a new promo loan request in the database
+      operationId: postPromoLoans
+
+      parameters:
+        - in: body
+          name: body
+          description: Promo loan details
+          required: true
+          schema:
+            $ref: '#/definitions/PostPromoLoan'
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json:
+              success: true
+              message: New promo loan request created successfully
+              data: {}
+        400:
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: Invalid input
+              errorCode: 10
+
+  '/addpromo': 
+    post:
+      security:
+      - tokenAuth: []
+      summary: Create a new promo item
+      description: Creates a new promo item in the database
+      operationId: postPromoItem
+
+      parameters:
+        - in: body
+          name: body
+          description: Promo item details
+          required: true
+          
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json:
+              success: true
+              message: New promo item created successfully
+              data: {}
+        400:
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: Invalid input
+              errorCode: 10
+
+
+  '/promo': 
+    get:
+      security:
+      - tokenAuth: []
+      summary: Get all existing promo items
+      description: Returns all exsiting promo items in the database
+      operationId: getPromo
+
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json:
+              success: true
+              message: All promo items returned
+              data: {}
+        400:
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: Invalid input
+              errorCode: 10
+
+
   '/books': # path parameter in curly braces
     get:
       security:
@@ -1505,3 +1624,20 @@ definitions:
         description: Second nominated guarantor
         type: integer
 
+  PostPromoLoan:
+    type: object
+    required:
+      - items
+    properties:
+      items:
+        description: Promo items to get loan for
+        type: array
+
+PostPromoItem:
+    type: object
+    required:
+      - items
+    properties:
+      items:
+        description: Promo items to be created
+        type: array
