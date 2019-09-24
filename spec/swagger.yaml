@@ -17,7 +17,7 @@ info:
   x-logo:
     url: '/ale/logo.png'
 externalDocs:
-  description: ThroftBox backend Github page
+  description: ThriftBox backend Github page
   url: 'https://github.com/olajide1234/ale'
 produces:
   # This is a global default. You can OVERWRITE it in each specific operation.
@@ -759,7 +759,6 @@ paths:
               message: Invalid input
               errorCode: 10
 
-
   '/promo': 
     get:
       security:
@@ -786,6 +785,62 @@ paths:
               message: Invalid input
               errorCode: 10
 
+  '/promo/{itemId}':
+    parameters:
+      - name: itemId
+        description: The promo item ID
+        in: path
+        type: integer
+        required: true 
+    get:
+      security:
+      - tokenAuth: []
+      summary: Get a single promo item
+      description: Returns details of a single existing promo item in database
+      operationId: getSinglePromoItem
+
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json:
+              success: true
+              message: Promo items returned
+              data: {}
+        400:
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: Invalid input
+              errorCode: 10
+
+    patch:
+      security:
+      - tokenAuth: []
+      summary: Updates a single promo item
+      description: Updates a single existing promo item in database
+      operationId: editSinglePromoItem
+
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json:
+              success: true
+              message: Promo item updated
+              data: {}
+        400:
+          description: Bad input
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+          examples:
+            application/json:
+              success: false
+              message: Invalid input
+              errorCode: 10
 
   '/books': # path parameter in curly braces
     get:
@@ -1633,7 +1688,7 @@ definitions:
         description: Promo items to get loan for
         type: array
 
-PostPromoItem:
+  PostPromoItem:
     type: object
     required:
       - items
