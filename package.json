@@ -9,7 +9,7 @@
   "scripts": {
     "test": "NODE_ENV=test mocha test/*.js --timeout 10000",
     "deploy": "npm run build && ./deploy-docs.sh",
-    "build": "node ./scripts/build.js",
+    "build": "node server",
     "swagger": "swagger-repo",
     "test:swagger": "swagger-repo validate",
     "start:dev": "nodemon server.js --verbose --ignore 'ale/lib/handlers*'",
