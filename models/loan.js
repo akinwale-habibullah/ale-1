@@ -1,6 +1,5 @@
 const Sequelize = require('sequelize');
 const sequelize = require('./connection');
-const Op = require('Sequelize').Op;
 const { AleError, codes } = require('../lib/errors');
 const User = require('./user');
 
@@ -40,7 +39,7 @@ Loan.belongsTo(User, { as: 'rejecter3' });
 Loan.checkExistingGuarantees = async function (id) {
   const numberOfGuarantees = await Loan.count({
     where: {
-      [Op.or]: [{ guarantor1Id: id }, { guarantor2Id: id }, { guarantor3Id: id }]
+      [Sequelize.Op.or]: [{ guarantor1Id: id }, { guarantor2Id: id }, { guarantor3Id: id }]
     }
   })
   return numberOfGuarantees
