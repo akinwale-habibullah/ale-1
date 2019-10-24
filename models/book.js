@@ -31,6 +31,7 @@ const Book = sequelize.define('book', {
     quoteCurrency: { type: Sequelize.STRING, defaultValue: 'USD' }
 });
 
+Book.hasMany(Account, { foreignKey: 'BookId' })
 JournalEntry.belongsTo(Book, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' });
 Transaction.belongsTo(Book, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' }); // Redundant, but saves double JOINS in a few queries
 Book.JournalEntries = Book.hasMany(JournalEntry, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' });
