@@ -14,16 +14,6 @@ const Account = sequelize.define('account', {
   accountType: { type: Sequelize.STRING },
   subAccountType: { type: Sequelize.STRING },
   memo: { type: Sequelize.STRING },
-  bookId: {
-    type: Sequelize.INTEGER,
-    references: {
-      // This is a reference to another model
-      model: Book,
-
-      // This is the column name of the referenced model
-      key: 'id',
-    }
-  },
 });
 
 /**
