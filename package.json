@@ -9,6 +9,7 @@
   "scripts": {
     "test": "NODE_ENV=test mocha test/*.js --timeout 10000",
     "swagger": "swagger-repo",
+    "seedAccounts": "node models/seed/seedAccounts",
     "test:swagger": "swagger-repo validate",
     "start:dev": "nodemon server.js --verbose --ignore 'ale/lib/handlers*'",
     "start": "node server"
