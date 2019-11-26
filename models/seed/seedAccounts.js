@@ -14,7 +14,7 @@ const accountSeed  = require('./accountSeed.json');
   await client.connect();
 
   const ignoreFields = ['isPorL', 'toIncrease', 'accountType', 'memo'];
-  const text = 'INSERT INTO accounts("accountCode", "accountName", "toIncrease", "isPorL", "accountType", memo, "createdAt", "updatedAt") VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *';
+  const text = 'INSERT INTO accounts("accountCode", "accountName", "toIncrease", "isPorL", "accountType", memo, "createdAt", "updatedAt", "bookId") VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *';
 
   const accountJson = await new Promise((resolve, reject) => {
     return fs.readFile(path.join(__dirname, 'accountSeed.json'), (err, data) => {
@@ -35,7 +35,7 @@ const accountSeed  = require('./accountSeed.json');
     
     Object.keys(accountCategory).map(async (categoryKey) => {
       if (!ignoreFields.includes(categoryKey)){
-        const values = [categoryKey, accountCategory[categoryKey], toIncrease, isPorL, accountType, memo, new Date(), new Date()];
+        const values = [categoryKey, accountCategory[categoryKey], toIncrease, isPorL, accountType, memo, new Date(), new Date(), 1];
 
         try {
           const res = await client.query(text, values)
