@@ -1,15 +1,16 @@
 const fs = require('fs');
 const path = require('path');
 const {pg, Client} = require('pg');
+const dotenv = require('dotenv');
 const accountSeed  = require('./accountSeed.json');
 
+dotenv.config();
+
 (async () => {
+  const connectionString = process.env.ALE_CONNECTION;
+
   const client = new Client({
-    user: 'habibakinwale',
-    host: 'localhost',
-    database: 'auncooperative',
-    password: 'password',
-    port: 5432,
+    connectionString
   });
   await client.connect();
 
